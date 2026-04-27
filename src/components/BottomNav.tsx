@@ -1,13 +1,20 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { Home, BookOpen, AlertTriangle, Users, User } from "lucide-react";
 
-const items = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: typeof Home;
+  primary?: boolean;
+};
+
+const items: NavItem[] = [
   { to: "/home", label: "Home", icon: Home },
   { to: "/edukasi", label: "Edukasi", icon: BookOpen },
   { to: "/report", label: "Report", icon: AlertTriangle, primary: true },
   { to: "/community", label: "Community", icon: Users },
   { to: "/profile", label: "Profile", icon: User },
-] as const;
+];
 
 export function BottomNav() {
   const { pathname } = useLocation();
@@ -21,7 +28,7 @@ export function BottomNav() {
             return (
               <Link
                 key={it.to}
-                to={it.to}
+                to={it.to as "/home"}
                 className="flex flex-col items-center -mt-7"
               >
                 <div className="h-14 w-14 rounded-2xl bg-[image:var(--gradient-primary)] flex items-center justify-center shadow-[var(--shadow-glow)]">
@@ -36,7 +43,7 @@ export function BottomNav() {
           return (
             <Link
               key={it.to}
-              to={it.to}
+              to={it.to as "/home"}
               className="flex flex-col items-center gap-1 px-3 py-1.5"
             >
               <Icon
