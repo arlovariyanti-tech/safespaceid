@@ -16,6 +16,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppSelfCheckRouteImport } from './routes/_app/self-check'
 import { Route as AppReportRouteImport } from './routes/_app/report'
+import { Route as AppQuizRouteImport } from './routes/_app/quiz'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppMotivationRouteImport } from './routes/_app/motivation'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
@@ -24,6 +25,7 @@ import { Route as AppEdukasiRouteImport } from './routes/_app/edukasi'
 import { Route as AppDiaryRouteImport } from './routes/_app/diary'
 import { Route as AppCommunityRouteImport } from './routes/_app/community'
 import { Route as AppChallengeRouteImport } from './routes/_app/challenge'
+import { Route as AppEdukasiSlugRouteImport } from './routes/_app/edukasi.$slug'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -57,6 +59,11 @@ const AppSelfCheckRoute = AppSelfCheckRouteImport.update({
 const AppReportRoute = AppReportRouteImport.update({
   id: '/report',
   path: '/report',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppQuizRoute = AppQuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
   getParentRoute: () => AppRoute,
 } as any)
 const AppProfileRoute = AppProfileRouteImport.update({
@@ -99,6 +106,11 @@ const AppChallengeRoute = AppChallengeRouteImport.update({
   path: '/challenge',
   getParentRoute: () => AppRoute,
 } as any)
+const AppEdukasiSlugRoute = AppEdukasiSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => AppEdukasiRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -108,13 +120,15 @@ export interface FileRoutesByFullPath {
   '/challenge': typeof AppChallengeRoute
   '/community': typeof AppCommunityRoute
   '/diary': typeof AppDiaryRoute
-  '/edukasi': typeof AppEdukasiRoute
+  '/edukasi': typeof AppEdukasiRouteWithChildren
   '/emergency': typeof AppEmergencyRoute
   '/home': typeof AppHomeRoute
   '/motivation': typeof AppMotivationRoute
   '/profile': typeof AppProfileRoute
+  '/quiz': typeof AppQuizRoute
   '/report': typeof AppReportRoute
   '/self-check': typeof AppSelfCheckRoute
+  '/edukasi/$slug': typeof AppEdukasiSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -124,13 +138,15 @@ export interface FileRoutesByTo {
   '/challenge': typeof AppChallengeRoute
   '/community': typeof AppCommunityRoute
   '/diary': typeof AppDiaryRoute
-  '/edukasi': typeof AppEdukasiRoute
+  '/edukasi': typeof AppEdukasiRouteWithChildren
   '/emergency': typeof AppEmergencyRoute
   '/home': typeof AppHomeRoute
   '/motivation': typeof AppMotivationRoute
   '/profile': typeof AppProfileRoute
+  '/quiz': typeof AppQuizRoute
   '/report': typeof AppReportRoute
   '/self-check': typeof AppSelfCheckRoute
+  '/edukasi/$slug': typeof AppEdukasiSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -142,13 +158,15 @@ export interface FileRoutesById {
   '/_app/challenge': typeof AppChallengeRoute
   '/_app/community': typeof AppCommunityRoute
   '/_app/diary': typeof AppDiaryRoute
-  '/_app/edukasi': typeof AppEdukasiRoute
+  '/_app/edukasi': typeof AppEdukasiRouteWithChildren
   '/_app/emergency': typeof AppEmergencyRoute
   '/_app/home': typeof AppHomeRoute
   '/_app/motivation': typeof AppMotivationRoute
   '/_app/profile': typeof AppProfileRoute
+  '/_app/quiz': typeof AppQuizRoute
   '/_app/report': typeof AppReportRoute
   '/_app/self-check': typeof AppSelfCheckRoute
+  '/_app/edukasi/$slug': typeof AppEdukasiSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -165,8 +183,10 @@ export interface FileRouteTypes {
     | '/home'
     | '/motivation'
     | '/profile'
+    | '/quiz'
     | '/report'
     | '/self-check'
+    | '/edukasi/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -181,8 +201,10 @@ export interface FileRouteTypes {
     | '/home'
     | '/motivation'
     | '/profile'
+    | '/quiz'
     | '/report'
     | '/self-check'
+    | '/edukasi/$slug'
   id:
     | '__root__'
     | '/'
@@ -198,8 +220,10 @@ export interface FileRouteTypes {
     | '/_app/home'
     | '/_app/motivation'
     | '/_app/profile'
+    | '/_app/quiz'
     | '/_app/report'
     | '/_app/self-check'
+    | '/_app/edukasi/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -261,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppReportRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/quiz': {
+      id: '/_app/quiz'
+      path: '/quiz'
+      fullPath: '/quiz'
+      preLoaderRoute: typeof AppQuizRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/profile': {
       id: '/_app/profile'
       path: '/profile'
@@ -317,18 +348,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppChallengeRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/edukasi/$slug': {
+      id: '/_app/edukasi/$slug'
+      path: '/$slug'
+      fullPath: '/edukasi/$slug'
+      preLoaderRoute: typeof AppEdukasiSlugRouteImport
+      parentRoute: typeof AppEdukasiRoute
+    }
   }
 }
+
+interface AppEdukasiRouteChildren {
+  AppEdukasiSlugRoute: typeof AppEdukasiSlugRoute
+}
+
+const AppEdukasiRouteChildren: AppEdukasiRouteChildren = {
+  AppEdukasiSlugRoute: AppEdukasiSlugRoute,
+}
+
+const AppEdukasiRouteWithChildren = AppEdukasiRoute._addFileChildren(
+  AppEdukasiRouteChildren,
+)
 
 interface AppRouteChildren {
   AppChallengeRoute: typeof AppChallengeRoute
   AppCommunityRoute: typeof AppCommunityRoute
   AppDiaryRoute: typeof AppDiaryRoute
-  AppEdukasiRoute: typeof AppEdukasiRoute
+  AppEdukasiRoute: typeof AppEdukasiRouteWithChildren
   AppEmergencyRoute: typeof AppEmergencyRoute
   AppHomeRoute: typeof AppHomeRoute
   AppMotivationRoute: typeof AppMotivationRoute
   AppProfileRoute: typeof AppProfileRoute
+  AppQuizRoute: typeof AppQuizRoute
   AppReportRoute: typeof AppReportRoute
   AppSelfCheckRoute: typeof AppSelfCheckRoute
 }
@@ -337,11 +388,12 @@ const AppRouteChildren: AppRouteChildren = {
   AppChallengeRoute: AppChallengeRoute,
   AppCommunityRoute: AppCommunityRoute,
   AppDiaryRoute: AppDiaryRoute,
-  AppEdukasiRoute: AppEdukasiRoute,
+  AppEdukasiRoute: AppEdukasiRouteWithChildren,
   AppEmergencyRoute: AppEmergencyRoute,
   AppHomeRoute: AppHomeRoute,
   AppMotivationRoute: AppMotivationRoute,
   AppProfileRoute: AppProfileRoute,
+  AppQuizRoute: AppQuizRoute,
   AppReportRoute: AppReportRoute,
   AppSelfCheckRoute: AppSelfCheckRoute,
 }
