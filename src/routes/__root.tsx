@@ -29,14 +29,18 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "No More Bully" },
+      { name: "description", content: "No More Bully adalah aplikasi edukasi dan dukungan emosional yang dirancang untuk membantu remaja memahami, mencegah, dan menghadapi bullying dengan cara yang l" },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "No More Bully" },
+      { property: "og:description", content: "No More Bully adalah aplikasi edukasi dan dukungan emosional yang dirancang untuk membantu remaja memahami, mencegah, dan menghadapi bullying dengan cara yang l" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "No More Bully" },
+      { name: "twitter:description", content: "No More Bully adalah aplikasi edukasi dan dukungan emosional yang dirancang untuk membantu remaja memahami, mencegah, dan menghadapi bullying dengan cara yang l" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/etZEEahDDLdNXwZIlmnK9XoUS2T2/social-images/social-1777279203860-WhatsApp_Image_2026-04-27_at_15.38.40_(1).webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/etZEEahDDLdNXwZIlmnK9XoUS2T2/social-images/social-1777279203860-WhatsApp_Image_2026-04-27_at_15.38.40_(1).webp" },
     ],
     links: [
       {
