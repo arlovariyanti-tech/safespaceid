@@ -83,7 +83,7 @@ function Quiz() {
   const [done, setDone] = useState(false);
   const [showExplain, setShowExplain] = useState(false);
 
-  const correctCount = answers.reduce((acc, a, i) => {
+  const correctCount = answers.reduce<number>((acc, a, i) => {
     const q = questions[i];
     if (a === null) return acc;
     if (q.type === "mcq" && a === q.answer) return acc + 1;
