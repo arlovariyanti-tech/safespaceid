@@ -9,38 +9,237 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppSelfCheckRouteImport } from './routes/_app/self-check'
+import { Route as AppReportRouteImport } from './routes/_app/report'
+import { Route as AppProfileRouteImport } from './routes/_app/profile'
+import { Route as AppMotivationRouteImport } from './routes/_app/motivation'
+import { Route as AppHomeRouteImport } from './routes/_app/home'
+import { Route as AppEmergencyRouteImport } from './routes/_app/emergency'
+import { Route as AppEdukasiRouteImport } from './routes/_app/edukasi'
+import { Route as AppDiaryRouteImport } from './routes/_app/diary'
+import { Route as AppCommunityRouteImport } from './routes/_app/community'
+import { Route as AppChallengeRouteImport } from './routes/_app/challenge'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppSelfCheckRoute = AppSelfCheckRouteImport.update({
+  id: '/self-check',
+  path: '/self-check',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppReportRoute = AppReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMotivationRoute = AppMotivationRouteImport.update({
+  id: '/motivation',
+  path: '/motivation',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHomeRoute = AppHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmergencyRoute = AppEmergencyRouteImport.update({
+  id: '/emergency',
+  path: '/emergency',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEdukasiRoute = AppEdukasiRouteImport.update({
+  id: '/edukasi',
+  path: '/edukasi',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDiaryRoute = AppDiaryRouteImport.update({
+  id: '/diary',
+  path: '/diary',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCommunityRoute = AppCommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppChallengeRoute = AppChallengeRouteImport.update({
+  id: '/challenge',
+  path: '/challenge',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
+  '/register': typeof RegisterRoute
+  '/challenge': typeof AppChallengeRoute
+  '/community': typeof AppCommunityRoute
+  '/diary': typeof AppDiaryRoute
+  '/edukasi': typeof AppEdukasiRoute
+  '/emergency': typeof AppEmergencyRoute
+  '/home': typeof AppHomeRoute
+  '/motivation': typeof AppMotivationRoute
+  '/profile': typeof AppProfileRoute
+  '/report': typeof AppReportRoute
+  '/self-check': typeof AppSelfCheckRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
+  '/register': typeof RegisterRoute
+  '/challenge': typeof AppChallengeRoute
+  '/community': typeof AppCommunityRoute
+  '/diary': typeof AppDiaryRoute
+  '/edukasi': typeof AppEdukasiRoute
+  '/emergency': typeof AppEmergencyRoute
+  '/home': typeof AppHomeRoute
+  '/motivation': typeof AppMotivationRoute
+  '/profile': typeof AppProfileRoute
+  '/report': typeof AppReportRoute
+  '/self-check': typeof AppSelfCheckRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRoute
+  '/register': typeof RegisterRoute
+  '/_app/challenge': typeof AppChallengeRoute
+  '/_app/community': typeof AppCommunityRoute
+  '/_app/diary': typeof AppDiaryRoute
+  '/_app/edukasi': typeof AppEdukasiRoute
+  '/_app/emergency': typeof AppEmergencyRoute
+  '/_app/home': typeof AppHomeRoute
+  '/_app/motivation': typeof AppMotivationRoute
+  '/_app/profile': typeof AppProfileRoute
+  '/_app/report': typeof AppReportRoute
+  '/_app/self-check': typeof AppSelfCheckRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/onboarding'
+    | '/register'
+    | '/challenge'
+    | '/community'
+    | '/diary'
+    | '/edukasi'
+    | '/emergency'
+    | '/home'
+    | '/motivation'
+    | '/profile'
+    | '/report'
+    | '/self-check'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/onboarding'
+    | '/register'
+    | '/challenge'
+    | '/community'
+    | '/diary'
+    | '/edukasi'
+    | '/emergency'
+    | '/home'
+    | '/motivation'
+    | '/profile'
+    | '/report'
+    | '/self-check'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/login'
+    | '/onboarding'
+    | '/register'
+    | '/_app/challenge'
+    | '/_app/community'
+    | '/_app/diary'
+    | '/_app/edukasi'
+    | '/_app/emergency'
+    | '/_app/home'
+    | '/_app/motivation'
+    | '/_app/profile'
+    | '/_app/report'
+    | '/_app/self-check'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  OnboardingRoute: typeof OnboardingRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +247,113 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/self-check': {
+      id: '/_app/self-check'
+      path: '/self-check'
+      fullPath: '/self-check'
+      preLoaderRoute: typeof AppSelfCheckRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/report': {
+      id: '/_app/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof AppReportRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/motivation': {
+      id: '/_app/motivation'
+      path: '/motivation'
+      fullPath: '/motivation'
+      preLoaderRoute: typeof AppMotivationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/home': {
+      id: '/_app/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AppHomeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/emergency': {
+      id: '/_app/emergency'
+      path: '/emergency'
+      fullPath: '/emergency'
+      preLoaderRoute: typeof AppEmergencyRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/edukasi': {
+      id: '/_app/edukasi'
+      path: '/edukasi'
+      fullPath: '/edukasi'
+      preLoaderRoute: typeof AppEdukasiRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/diary': {
+      id: '/_app/diary'
+      path: '/diary'
+      fullPath: '/diary'
+      preLoaderRoute: typeof AppDiaryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/community': {
+      id: '/_app/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof AppCommunityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/challenge': {
+      id: '/_app/challenge'
+      path: '/challenge'
+      fullPath: '/challenge'
+      preLoaderRoute: typeof AppChallengeRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppChallengeRoute: typeof AppChallengeRoute
+  AppCommunityRoute: typeof AppCommunityRoute
+  AppDiaryRoute: typeof AppDiaryRoute
+  AppEdukasiRoute: typeof AppEdukasiRoute
+  AppEmergencyRoute: typeof AppEmergencyRoute
+  AppHomeRoute: typeof AppHomeRoute
+  AppMotivationRoute: typeof AppMotivationRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppReportRoute: typeof AppReportRoute
+  AppSelfCheckRoute: typeof AppSelfCheckRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppChallengeRoute: AppChallengeRoute,
+  AppCommunityRoute: AppCommunityRoute,
+  AppDiaryRoute: AppDiaryRoute,
+  AppEdukasiRoute: AppEdukasiRoute,
+  AppEmergencyRoute: AppEmergencyRoute,
+  AppHomeRoute: AppHomeRoute,
+  AppMotivationRoute: AppMotivationRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppReportRoute: AppReportRoute,
+  AppSelfCheckRoute: AppSelfCheckRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
+  OnboardingRoute: OnboardingRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
