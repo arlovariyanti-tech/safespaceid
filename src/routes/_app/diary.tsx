@@ -1,83 +1,156 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/MobileFrame";
 import { Button } from "@/components/ui/button";
-import {
-  Lock, Plus, Smile, Frown, Meh, Heart, Angry, Moon, Wind, Star, Calendar,
-  Sparkles, ShieldCheck, Phone,
-} from "lucide-react";
+import { Lock, Plus, Star, Calendar, Sparkles, ShieldCheck, Phone, Trash2, Pencil, Search, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/diary")({
   component: Diary,
 });
 
 const moods = [
-  { key: "senang", emoji: "😊", label: "Senang", icon: Smile, color: "bg-emerald-100 text-emerald-700" },
-  { key: "sedih", emoji: "😔", label: "Sedih", icon: Frown, color: "bg-blue-100 text-blue-700" },
-  { key: "cemas", emoji: "😰", label: "Cemas", icon: Wind, color: "bg-amber-100 text-amber-700" },
-  { key: "marah", emoji: "😡", label: "Marah", icon: Angry, color: "bg-rose-100 text-rose-700" },
-  { key: "lelah", emoji: "😴", label: "Lelah", icon: Moon, color: "bg-violet-100 text-violet-700" },
-  { key: "tenang", emoji: "😌", label: "Tenang", icon: Heart, color: "bg-sky-100 text-sky-700" },
+  { key: "senang", emoji: "😊", label: "Senang" },
+  { key: "sedih", emoji: "😔", label: "Sedih" },
+  { key: "cemas", emoji: "😰", label: "Cemas" },
+  { key: "marah", emoji: "😡", label: "Marah" },
+  { key: "lelah", emoji: "😴", label: "Lelah" },
+  { key: "tenang", emoji: "😌", label: "Tenang" },
 ];
 
 const prompts = [
   "Apa yang paling membuatmu lelah hari ini?",
-  "Siapa yang paling membuatmu merasa didengar hari ini?",
   "Apa hal kecil yang membuatmu bersyukur hari ini?",
   "Apa yang ingin kamu lepaskan hari ini?",
   "Apa yang ingin kamu katakan pada dirimu sendiri hari ini?",
-  "Apa pencapaian kecil yang patut kamu rayakan hari ini?",
-  "Hal apa yang ingin kamu maafkan dari dirimu sendiri?",
 ];
 
-const responses: Record<string, string> = {
-  senang: "Senang bisa membaca harimu! Pelihara perasaan baik ini ya 💛",
-  sedih: "Perasaanmu valid. Kamu tidak harus selalu terlihat baik-baik saja.",
-  cemas: "Tarik napas perlahan. Kamu aman di sini, dan kamu sudah sangat berani.",
-  marah: "Marah itu wajar. Terima kasih sudah menyalurkannya di tempat yang aman.",
-  lelah: "Kadang lelah itu wajar. Istirahat juga bagian dari proses.",
-  tenang: "Tetap pelihara ketenangan ini. Kamu pantas mendapatkannya.",
+type Entry = {
+  id: string;
+  content: string;
+  mood: string | null;
+  is_favorite: boolean;
+  created_at: string;
+  updated_at: string;
 };
 
-const initialEntries = [
-  { date: "Hari ini", mood: "sedih", text: "Hari ini agak berat. Tapi setidaknya aku punya tempat untuk menulis…", fav: false },
-  { date: "Kemarin", mood: "cemas", text: "Aku coba bicara ke teman dekat. Lega rasanya.", fav: true },
-  { date: "2 hari lalu", mood: "senang", text: "Ada teman baru yang baik banget di kelas!", fav: false },
-  { date: "3 hari lalu", mood: "cemas", text: "Besok ada presentasi, deg-degan banget.", fav: false },
-];
+const DRAFT_KEY = "nmb_diary_draft";
+
+function friendlyDate(iso: string) {
+  const d = new Date(iso);
+  const today = new Date();
+  const diffDays = Math.floor((today.setHours(0, 0, 0, 0) - new Date(iso).setHours(0, 0, 0, 0)) / 86400000);
+  if (diffDays === 0) return "Hari ini";
+  if (diffDays === 1) return "Kemarin";
+  if (diffDays < 7) return `${diffDays} hari lalu`;
+  return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+}
 
 function Diary() {
+  const { user } = useAuth();
+  const nav = useNavigate();
   const [unlocked, setUnlocked] = useState(false);
   const [pin, setPin] = useState("");
+  const [entries, setEntries] = useState<Entry[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [writing, setWriting] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [mood, setMood] = useState<string | null>(null);
   const [text, setText] = useState("");
-  const [saved, setSaved] = useState<{ mood: string } | null>(null);
-  const [entries, setEntries] = useState(initialEntries);
   const [tab, setTab] = useState<"all" | "fav">("all");
+  const [q, setQ] = useState("");
 
-  const todayPrompt = useMemo(() => {
-    const day = new Date().getDate();
-    return prompts[day % prompts.length];
-  }, []);
+  const todayPrompt = prompts[new Date().getDate() % prompts.length];
 
-  // dominant mood this week
-  const dominant = useMemo(() => {
-    const counts: Record<string, number> = {};
-    entries.forEach((e) => (counts[e.mood] = (counts[e.mood] || 0) + 1));
-    return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "tenang";
-  }, [entries]);
+  useEffect(() => {
+    if (!user || !unlocked) return;
+    (async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("diary_entries")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) toast.error("Gagal memuat diary");
+      else setEntries((data as Entry[]) ?? []);
+      setLoading(false);
+    })();
+  }, [user, unlocked]);
 
-  const summary =
-    dominant === "cemas" || dominant === "sedih"
-      ? "Minggu ini kamu lebih sering merasa cemas atau sedih. Mungkin ini saatnya kamu beristirahat dan mencari dukungan."
-      : dominant === "marah"
-      ? "Minggu ini kamu sering merasa marah. Coba kenali pemicunya — kamu pantas dapat ruang untuk bernapas."
-      : "Minggu ini kamu lebih banyak merasa tenang. Pertahankan lingkungan yang sehat untuk dirimu.";
+  // Draft autosave
+  useEffect(() => {
+    if (writing) {
+      const draft = localStorage.getItem(DRAFT_KEY);
+      if (draft && !editingId) {
+        try {
+          const d = JSON.parse(draft);
+          if (d.text) {
+            setText(d.text);
+            setMood(d.mood);
+          }
+        } catch { /* noop */ }
+      }
+    }
+  }, [writing, editingId]);
 
-  const needsHelp = dominant === "sedih" || dominant === "cemas";
+  useEffect(() => {
+    if (writing && !editingId) {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ text, mood }));
+    }
+  }, [text, mood, writing, editingId]);
 
-  // ------ LOCK SCREEN ------
+  const openWrite = (entry?: Entry) => {
+    if (entry) {
+      setEditingId(entry.id);
+      setText(entry.content);
+      setMood(entry.mood);
+    } else {
+      setEditingId(null);
+    }
+    setWriting(true);
+  };
+
+  const save = async () => {
+    if (!text.trim() || !mood || !user) return;
+    if (editingId) {
+      const { error } = await supabase
+        .from("diary_entries")
+        .update({ content: text.trim(), mood, updated_at: new Date().toISOString() })
+        .eq("id", editingId);
+      if (error) return toast.error("Gagal menyimpan");
+      toast.success("Diary diperbarui");
+    } else {
+      const { error } = await supabase
+        .from("diary_entries")
+        .insert({ user_id: user.id, content: text.trim(), mood });
+      if (error) return toast.error("Gagal menyimpan");
+      toast.success("Tersimpan aman 🤍");
+    }
+    localStorage.removeItem(DRAFT_KEY);
+    setWriting(false); setEditingId(null); setText(""); setMood(null);
+    const { data } = await supabase.from("diary_entries").select("*").order("created_at", { ascending: false });
+    setEntries((data as Entry[]) ?? []);
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Hapus catatan ini?")) return;
+    const { error } = await supabase.from("diary_entries").delete().eq("id", id);
+    if (error) return toast.error("Gagal menghapus");
+    setEntries(entries.filter(e => e.id !== id));
+    toast.success("Dihapus");
+  };
+
+  const toggleFav = async (e: Entry) => {
+    const { error } = await supabase
+      .from("diary_entries")
+      .update({ is_favorite: !e.is_favorite })
+      .eq("id", e.id);
+    if (error) return;
+    setEntries(entries.map(x => x.id === e.id ? { ...x, is_favorite: !x.is_favorite } : x));
+  };
+
   if (!unlocked) {
     return (
       <div>
@@ -105,71 +178,52 @@ function Diary() {
     );
   }
 
-  // ------ POST-SAVE THANK YOU ------
-  if (saved) {
-    return (
-      <div>
-        <PageHeader title="Tersimpan" />
-        <div className="p-5 space-y-5">
-          <div className="p-8 rounded-3xl bg-gradient-to-br from-pink-100 to-rose-100 text-center space-y-3">
-            <div className="text-5xl">🤍</div>
-            <h2 className="text-lg font-bold">Terima kasih sudah bercerita hari ini</h2>
-            <p className="text-sm text-foreground/80">{responses[saved.mood] ?? "Kamu sudah sangat kuat."}</p>
-          </div>
-          <Button variant="hero" size="xl" className="w-full" onClick={() => setSaved(null)}>Kembali ke Diary</Button>
-        </div>
-      </div>
-    );
-  }
-
-  // ------ WRITING ------
   if (writing) {
     return (
       <div>
-        <PageHeader title="Tulis Hari Ini" subtitle={new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" })} />
+        <PageHeader
+          title={editingId ? "Edit Catatan" : "Tulis Hari Ini"}
+          subtitle={new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long" })}
+        />
         <div className="p-5 space-y-4">
           <div>
-            <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Mood Hari Ini</p>
+            <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Mood</p>
             <div className="grid grid-cols-3 gap-2">
               {moods.map((m) => (
-                <button
-                  key={m.key}
-                  onClick={() => setMood(m.key)}
-                  className={`flex flex-col items-center gap-1 p-3 rounded-2xl border ${mood === m.key ? "border-primary bg-primary/5" : "border-border bg-card"}`}
-                >
+                <button key={m.key} onClick={() => setMood(m.key)}
+                  className={`flex flex-col items-center gap-1 p-3 rounded-2xl border ${mood === m.key ? "border-primary bg-primary/5" : "border-border bg-card"}`}>
                   <span className="text-2xl">{m.emoji}</span>
                   <span className="text-[11px] font-medium">{m.label}</span>
                 </button>
               ))}
             </div>
           </div>
-
           <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-100 border border-amber-200/60">
-            <p className="text-[11px] font-bold text-amber-800 uppercase tracking-wider mb-1">✨ Daily Prompt</p>
+            <p className="text-[11px] font-bold text-amber-800 uppercase tracking-wider mb-1">✨ Prompt</p>
             <p className="text-sm font-semibold leading-snug">{todayPrompt}</p>
           </div>
-
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Tulis bebas apapun yang kamu rasakan…"
-            rows={10}
-            className="w-full p-4 rounded-2xl border border-border bg-card text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
-          />
+          <textarea value={text} onChange={(e) => setText(e.target.value)}
+            placeholder="Tulis bebas apapun yang kamu rasakan…" rows={10}
+            className="w-full p-4 rounded-2xl border border-border bg-card text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" />
           <div className="flex gap-2">
-            <Button variant="outlineHero" size="lg" className="flex-1" onClick={() => { setWriting(false); setText(""); setMood(null); }}>Batal</Button>
-            <Button variant="hero" size="lg" className="flex-1" disabled={!mood || !text.trim()} onClick={() => {
-              setEntries([{ date: "Baru saja", mood: mood!, text: text.trim(), fav: false }, ...entries]);
-              setSaved({ mood: mood! });
-              setWriting(false); setText(""); setMood(null);
-            }}>Simpan</Button>
+            <Button variant="outlineHero" size="lg" className="flex-1"
+              onClick={() => { setWriting(false); setEditingId(null); setText(""); setMood(null); }}>
+              Batal
+            </Button>
+            <Button variant="hero" size="lg" className="flex-1" disabled={!mood || !text.trim()} onClick={save}>
+              Simpan
+            </Button>
           </div>
         </div>
       </div>
     );
   }
 
-  const visible = tab === "fav" ? entries.filter((e) => e.fav) : entries;
+  const filtered = entries
+    .filter(e => tab === "fav" ? e.is_favorite : true)
+    .filter(e => q ? e.content.toLowerCase().includes(q.toLowerCase()) || e.mood?.includes(q.toLowerCase()) : true);
+
+  const draft = localStorage.getItem(DRAFT_KEY);
 
   return (
     <div>
@@ -177,7 +231,7 @@ function Diary() {
       <div className="p-5 space-y-4">
         <div className="p-4 rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-100 border border-violet-200/60 flex items-center gap-3">
           <Lock className="h-5 w-5 text-violet-700 shrink-0" />
-          <p className="text-xs text-foreground/80">Semua tulisanmu terenkripsi & tidak dibagikan ke siapapun.</p>
+          <p className="text-xs text-foreground/80">Tulisanmu tersimpan aman & hanya kamu yang bisa membacanya.</p>
         </div>
 
         <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-100 border border-amber-200/60">
@@ -188,64 +242,77 @@ function Diary() {
           <p className="text-sm font-semibold leading-snug">{todayPrompt}</p>
         </div>
 
-        <Button variant="hero" size="xl" className="w-full" onClick={() => setWriting(true)}>
-          <Plus className="h-5 w-5" /> Tulis Hari Ini
-        </Button>
-
-        <div className="p-4 rounded-2xl bg-card border border-border/60 space-y-2">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-primary" />
-            <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Ringkasan Mingguan</p>
-          </div>
-          <p className="text-sm font-medium leading-snug">{summary}</p>
-        </div>
-
-        {needsHelp && (
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-pink-100 border border-rose-200/60 space-y-3">
-            <p className="text-sm font-semibold">Kamu terlihat butuh dukungan ekstra. Kami di sini untukmu 💛</p>
-            <div className="grid grid-cols-2 gap-2">
-              <Link to="/community" className="text-center text-xs font-semibold py-2 rounded-xl bg-background border border-border">Cari Dukungan</Link>
-              <Link to="/emergency" className="text-center text-xs font-semibold py-2 rounded-xl bg-background border border-border flex items-center justify-center gap-1"><Phone className="h-3 w-3" /> Hubungi Mentor</Link>
-              <Link to="/motivation" className="text-center text-xs font-semibold py-2 rounded-xl bg-background border border-border">Baca Motivasi</Link>
-              <Link to="/self-check" className="text-center text-xs font-semibold py-2 rounded-xl bg-background border border-border">Mulai Self Check</Link>
+        {draft && (
+          <div className="p-3 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-between gap-2">
+            <p className="text-xs text-sky-900">Draft terakhir ditemukan. Lanjutkan menulis?</p>
+            <div className="flex gap-1">
+              <button onClick={() => { localStorage.removeItem(DRAFT_KEY); setText(""); setMood(null); }}
+                className="h-7 w-7 rounded-full bg-white flex items-center justify-center"><X className="h-3 w-3" /></button>
+              <button onClick={() => openWrite()} className="px-3 h-7 rounded-full bg-sky-600 text-white text-xs font-semibold">Lanjut</button>
             </div>
           </div>
         )}
 
-        <div className="flex gap-2 pt-2">
-          <button onClick={() => setTab("all")} className={`flex-1 h-9 rounded-xl text-xs font-semibold ${tab === "all" ? "bg-foreground text-background" : "bg-card border border-border"}`}>Semua</button>
-          <button onClick={() => setTab("fav")} className={`flex-1 h-9 rounded-xl text-xs font-semibold ${tab === "fav" ? "bg-foreground text-background" : "bg-card border border-border"}`}>★ Favorite</button>
+        <Button variant="hero" size="xl" className="w-full" onClick={() => openWrite()}>
+          <Plus className="h-5 w-5" /> Tulis Hari Ini
+        </Button>
+
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari catatan atau mood..."
+            className="w-full pl-10 h-10 rounded-xl bg-card border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        </div>
+
+        <div className="flex gap-2">
+          <button onClick={() => setTab("all")}
+            className={`flex-1 h-9 rounded-xl text-xs font-semibold ${tab === "all" ? "bg-foreground text-background" : "bg-card border border-border"}`}>
+            Semua ({entries.length})
+          </button>
+          <button onClick={() => setTab("fav")}
+            className={`flex-1 h-9 rounded-xl text-xs font-semibold ${tab === "fav" ? "bg-foreground text-background" : "bg-card border border-border"}`}>
+            ★ Favorit ({entries.filter(e => e.is_favorite).length})
+          </button>
         </div>
 
         <div className="space-y-3">
-          {visible.length === 0 && <p className="text-center text-xs text-muted-foreground py-6">Belum ada yang ditandai favorit.</p>}
-          {visible.map((e, i) => {
-            const m = moods.find((mm) => mm.key === e.mood);
+          {loading && <p className="text-center text-xs text-muted-foreground py-6">Memuat...</p>}
+          {!loading && filtered.length === 0 && (
+            <div className="text-center py-10 space-y-2">
+              <Calendar className="h-10 w-10 mx-auto text-muted-foreground/50" />
+              <p className="text-sm text-muted-foreground">Belum ada catatan. Mulai menulis hari ini 💙</p>
+            </div>
+          )}
+          {filtered.map((e) => {
+            const m = moods.find(mm => mm.key === e.mood);
             return (
-              <div key={i} className="p-4 rounded-2xl bg-card border border-border/60">
+              <div key={e.id} className="p-4 rounded-2xl bg-card border border-border/60">
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center gap-2">
                     {m && <span className="text-base">{m.emoji}</span>}
-                    <p className="text-xs font-semibold text-muted-foreground">{e.date}</p>
+                    <p className="text-xs font-semibold text-muted-foreground">{friendlyDate(e.created_at)}</p>
                   </div>
-                  <button
-                    onClick={() => setEntries(entries.map((x) => x === e ? { ...x, fav: !x.fav } : x))}
-                    aria-label="favorite"
-                  >
-                    <Star className={`h-4 w-4 ${e.fav ? "fill-amber-400 text-amber-500" : "text-muted-foreground"}`} />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => toggleFav(e)} className="p-1.5">
+                      <Star className={`h-4 w-4 ${e.is_favorite ? "fill-amber-400 text-amber-500" : "text-muted-foreground"}`} />
+                    </button>
+                    <button onClick={() => openWrite(e)} className="p-1.5"><Pencil className="h-3.5 w-3.5 text-muted-foreground" /></button>
+                    <button onClick={() => remove(e.id)} className="p-1.5"><Trash2 className="h-3.5 w-3.5 text-rose-500" /></button>
+                  </div>
                 </div>
-                <p className="text-sm text-foreground/80 leading-relaxed">{e.text}</p>
+                <p className="text-sm text-foreground/85 leading-relaxed whitespace-pre-wrap">{e.content}</p>
               </div>
             );
           })}
         </div>
 
-        <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-50 to-violet-100 border border-indigo-200/60 mt-4">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-700 mb-1">Refleksi Bulanan</p>
-          <p className="text-sm font-semibold leading-snug">
-            Bulan ini kamu lebih banyak menulis tentang kecemasan dan pertemanan. Kamu sudah bertahan sejauh ini, dan itu sangat hebat.
-          </p>
+        <div className="pt-2 grid grid-cols-2 gap-2">
+          <Link to="/emergency" className="text-center text-xs font-semibold py-3 rounded-xl bg-card border border-border flex items-center justify-center gap-1">
+            <Phone className="h-3 w-3" /> Butuh Bantuan
+          </Link>
+          <button onClick={() => { setUnlocked(false); setPin(""); nav({ to: "/home" }); }}
+            className="text-center text-xs font-semibold py-3 rounded-xl bg-card border border-border">
+            🔒 Kunci Diary
+          </button>
         </div>
       </div>
     </div>

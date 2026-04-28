@@ -1,18 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/MobileFrame";
-import { FileText, Brain, ChevronRight, Sparkles, Flame } from "lucide-react";
+import { Brain, ChevronRight, Sparkles, Flame, BookOpen } from "lucide-react";
 
 export const Route = createFileRoute("/_app/edukasi")({
   component: Edukasi,
 });
 
+export const EDUKASI_ORDER = [
+  "apa-itu-bullying",
+  "jenis-bullying",
+  "penyebab-dampak",
+  "tanda-korban",
+  "cara-menghadapi",
+  "cara-mencegah",
+] as const;
+
 const categories = [
-  { slug: "apa-itu-bullying", title: "Apa itu Bullying?", desc: "Pengertian & definisi dasar", color: "bg-sky-100" },
-  { slug: "jenis-bullying", title: "Jenis-jenis Bullying", desc: "Verbal, fisik, sosial, cyber", color: "bg-emerald-100" },
-  { slug: "penyebab-dampak", title: "Penyebab & Dampak", desc: "Kenapa terjadi & efeknya", color: "bg-violet-100" },
-  { slug: "tanda-korban", title: "Tanda Korban Bullying", desc: "Kenali gejala & sinyal", color: "bg-amber-100" },
-  { slug: "cara-menghadapi", title: "Cara Menghadapi", desc: "Strategi & langkah aman", color: "bg-rose-100" },
-  { slug: "cara-mencegah", title: "Cara Mencegah", desc: "Bangun lingkungan sehat", color: "bg-cyan-100" },
+  { slug: "apa-itu-bullying", title: "Apa itu Bullying?", desc: "Pengertian & definisi dasar", color: "bg-sky-100", emoji: "💭" },
+  { slug: "jenis-bullying", title: "Jenis-jenis Bullying", desc: "Verbal, fisik, sosial, cyber", color: "bg-emerald-100", emoji: "🔍" },
+  { slug: "penyebab-dampak", title: "Penyebab & Dampak", desc: "Kenapa terjadi & efeknya", color: "bg-violet-100", emoji: "💔" },
+  { slug: "tanda-korban", title: "Tanda Korban Bullying", desc: "Kenali gejala & sinyal", color: "bg-amber-100", emoji: "🫂" },
+  { slug: "cara-menghadapi", title: "Cara Menghadapi", desc: "Strategi & langkah aman", color: "bg-rose-100", emoji: "🛡️" },
+  { slug: "cara-mencegah", title: "Cara Mencegah", desc: "Bangun lingkungan sehat", color: "bg-cyan-100", emoji: "🌱" },
 ];
 
 function Edukasi() {
@@ -21,16 +30,24 @@ function Edukasi() {
       <PageHeader title="Edukasi" subtitle="Pahami bullying agar bisa melawannya." />
       <div className="px-5 py-5 space-y-7">
         <section>
-          <h2 className="font-bold mb-3 text-sm uppercase tracking-wider text-muted-foreground">Materi</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">6 Materi Utama</h2>
+            <span className="text-[11px] text-muted-foreground flex items-center gap-1"><BookOpen className="h-3 w-3" /> Belajar pelan-pelan</span>
+          </div>
           <div className="grid grid-cols-2 gap-3">
-            {categories.map((c) => (
+            {categories.map((c, i) => (
               <Link
                 key={c.slug}
                 to="/edukasi/$slug"
                 params={{ slug: c.slug }}
                 className={`text-left p-4 rounded-2xl ${c.color} hover:scale-[1.02] transition block`}
               >
-                <FileText className="h-5 w-5 text-foreground/70 mb-3" />
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-2xl">{c.emoji}</span>
+                  <span className="text-[10px] font-bold bg-white/70 px-2 py-0.5 rounded-full text-foreground/70">
+                    {i + 1}/6
+                  </span>
+                </div>
                 <p className="font-semibold text-sm leading-tight">{c.title}</p>
                 <p className="text-[11px] text-foreground/60 mt-1">{c.desc}</p>
                 <div className="flex items-center text-[11px] font-semibold text-foreground/70 mt-2">
@@ -50,7 +67,7 @@ function Edukasi() {
               <Brain className="h-5 w-5" />
             </div>
             <div className="flex items-center gap-1 text-[11px] font-bold text-orange-700 bg-white/70 px-2 py-1 rounded-full">
-              <Flame className="h-3 w-3" /> 5 Hari Streak
+              <Flame className="h-3 w-3" /> Harian
             </div>
           </div>
           <h3 className="font-bold text-lg mt-2">Kuis Harian</h3>

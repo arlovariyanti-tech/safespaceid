@@ -1,15 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PageHeader } from "@/components/MobileFrame";
 import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, PhoneCall, Bell, Lock } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/profile")({
   component: Profile,
 });
 
 const stats = [
-  { label: "Diary", value: "12", icon: NotebookPen },
-  { label: "Challenge", value: "2", icon: Target },
-  { label: "Badge", value: "5", icon: Award },
+  { label: "Diary", value: "–", icon: NotebookPen },
+  { label: "Challenge", value: "–", icon: Target },
+  { label: "Badge", value: "–", icon: Award },
 ];
 
 const menus = [
@@ -21,16 +23,19 @@ const menus = [
 
 function Profile() {
   const nav = useNavigate();
+  const { user, signOut } = useAuth();
+  const name = (user?.user_metadata?.display_name as string) || user?.email?.split("@")[0] || "Sahabat";
+  const initial = name[0]?.toUpperCase() ?? "S";
   return (
     <div>
       <PageHeader title="Profile" />
       <div className="p-5 space-y-5">
         <div className="flex flex-col items-center text-center pt-2">
           <div className="h-24 w-24 rounded-3xl bg-[image:var(--gradient-primary)] flex items-center justify-center text-3xl font-black text-primary-foreground shadow-[var(--shadow-glow)]">
-            S
+            {initial}
           </div>
-          <h2 className="text-xl font-bold mt-3">Sahabat Baik</h2>
-          <p className="text-sm text-muted-foreground">sahabat@email.com</p>
+          <h2 className="text-xl font-bold mt-3">{name}</h2>
+          <p className="text-sm text-muted-foreground">{user?.email}</p>
           <button className="mt-3 px-4 h-8 rounded-full border border-border text-xs font-medium">Edit Profil</button>
         </div>
 
@@ -74,7 +79,7 @@ function Profile() {
         </div>
 
         <button
-          onClick={() => nav({ to: "/login" })}
+          onClick={async () => { await signOut(); toast.success("Sampai jumpa lagi 💙"); nav({ to: "/login" }); }}
           className="w-full flex items-center justify-center gap-2 h-12 rounded-2xl bg-rose-50 text-rose-600 font-semibold text-sm border border-rose-200"
         >
           <LogOut className="h-4 w-4" /> Keluar

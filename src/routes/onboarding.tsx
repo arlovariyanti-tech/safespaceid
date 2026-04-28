@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { BookOpen, NotebookPen, AlertTriangle, Users, Sparkles } from "lucide-react";
+import { BookOpen, Heart, Sparkles } from "lucide-react";
 import { MobileFrame } from "@/components/MobileFrame";
 import { Button } from "@/components/ui/button";
 
@@ -9,11 +9,24 @@ export const Route = createFileRoute("/onboarding")({
 });
 
 const slides = [
-  { icon: BookOpen, title: "Edukasi Bullying", desc: "Pahami jenis, penyebab & dampak bullying lewat materi singkat dan interaktif.", color: "from-sky-100 to-blue-50" },
-  { icon: NotebookPen, title: "Safe Diary", desc: "Tulis perasaanmu dengan aman dan privat. Lega tanpa takut dihakimi.", color: "from-violet-100 to-indigo-50" },
-  { icon: AlertTriangle, title: "Report Bullying", desc: "Laporkan kasus secara aman ke pihak terpercaya: BK, wali kelas, atau mentor.", color: "from-rose-100 to-pink-50" },
-  { icon: Users, title: "Community Support", desc: "Bergabung dengan teman-teman yang saling mendukung tanpa menghakimi.", color: "from-emerald-100 to-teal-50" },
-  { icon: Sparkles, title: "Motivation Room", desc: "Afirmasi positif & cerita inspiratif untuk menguatkanmu setiap hari.", color: "from-amber-100 to-yellow-50" },
+  {
+    icon: BookOpen,
+    title: "Pahami Bullying",
+    desc: "Belajar mengenali, mencegah, dan menghadapi bullying lewat materi yang mudah dimengerti.",
+    color: "from-sky-100 to-blue-100",
+  },
+  {
+    icon: Heart,
+    title: "Ruang Aman untukmu",
+    desc: "Tempat bercerita, healing, dan mendapat dukungan emosional tanpa dihakimi.",
+    color: "from-violet-100 to-indigo-100",
+  },
+  {
+    icon: Sparkles,
+    title: "Bangun Kebiasaan Positif",
+    desc: "Challenge harian, komunitas suportif, dan lingkungan sosial yang lebih sehat.",
+    color: "from-amber-100 to-orange-100",
+  },
 ];
 
 function Onboarding() {
@@ -22,6 +35,12 @@ function Onboarding() {
   const s = slides[i];
   const Icon = s.icon;
   const last = i === slides.length - 1;
+
+  const finish = () => {
+    localStorage.setItem("nmb_onboarded", "1");
+    nav({ to: "/login" });
+  };
+
   return (
     <MobileFrame>
       <div className="min-h-screen flex flex-col p-6">
@@ -31,7 +50,7 @@ function Onboarding() {
               <div key={idx} className={`h-1.5 rounded-full transition-all ${idx === i ? "w-8 bg-primary" : "w-1.5 bg-border"}`} />
             ))}
           </div>
-          <Link to="/login" className="text-sm text-muted-foreground">Lewati</Link>
+          <button onClick={finish} className="text-sm text-muted-foreground">Lewati</button>
         </div>
         <div className="flex-1 flex flex-col items-center justify-center text-center space-y-8">
           <div className={`h-48 w-48 rounded-[3rem] bg-gradient-to-br ${s.color} flex items-center justify-center shadow-[var(--shadow-soft)]`}>
@@ -45,7 +64,7 @@ function Onboarding() {
         <Button
           variant="hero"
           size="xl"
-          onClick={() => (last ? nav({ to: "/login" }) : setI(i + 1))}
+          onClick={() => (last ? finish() : setI(i + 1))}
           className="w-full"
         >
           {last ? "Mulai Sekarang" : "Lanjut"}
