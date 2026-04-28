@@ -1,8 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { Shield, User, Mail, Lock } from "lucide-react";
+import { toast } from "sonner";
 import { MobileFrame } from "@/components/MobileFrame";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/register")({
   component: Register,
@@ -10,6 +13,30 @@ export const Route = createFileRoute("/register")({
 
 function Register() {
   const nav = useNavigate();
+  const { signUp } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (password.length < 6) {
+      toast.error("Password minimal 6 karakter");
+      return;
+    }
+    setBusy(true);
+    const { error } = await signUp(email.trim(), password, name.trim());
+    setBusy(false);
+    if (error) {
+      toast.error("Gagal daftar", { description: error });
+      return;
+    }
+    localStorage.setItem("nmb_onboarded", "1");
+    toast.success("Akun berhasil dibuat! 🎉");
+    nav({ to: "/home" });
+  };
+
   return (
     <MobileFrame>
       <div className="min-h-screen flex flex-col p-7">
@@ -21,18 +48,13 @@ function Register() {
           <p className="text-muted-foreground text-sm">Bergabung di komunitas yang peduli & saling mendukung.</p>
         </div>
 
-        <form
-          className="mt-8 space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            nav({ to: "/home" });
-          }}
-        >
-          <Field icon={User} label="Nama" placeholder="Nama lengkap" />
-          <Field icon={Mail} label="Email" placeholder="kamu@email.com" type="email" />
-          <Field icon={Lock} label="Password" placeholder="••••••••" type="password" />
-
-          <Button type="submit" variant="hero" size="xl" className="w-full mt-2">Daftar</Button>
+        <form className="mt-8 space-y-4" onSubmit={submit}>
+          <Field icon={User} label="Nama" placeholder="Nama lengkap" value={name} onChange={(e) => setName(e.target.value)} />
+          <Field icon={Mail} label="Email" placeholder="kamu@email.com" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Field icon={Lock} label="Password" placeholder="Minimal 6 karakter" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <Button type="submit" variant="hero" size="xl" className="w-full mt-2" disabled={busy}>
+            {busy ? "Memproses..." : "Daftar"}
+          </Button>
         </form>
 
         <p className="text-xs text-muted-foreground text-center mt-4 px-6">
@@ -40,8 +62,7 @@ function Register() {
         </p>
 
         <p className="text-center text-sm text-muted-foreground mt-auto pt-8">
-          Sudah punya akun?{" "}
-          <Link to="/login" className="text-primary font-semibold">Masuk</Link>
+          Sudah punya akun? <Link to="/login" className="text-primary font-semibold">Masuk</Link>
         </p>
       </div>
     </MobileFrame>

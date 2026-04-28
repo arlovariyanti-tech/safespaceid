@@ -1,8 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { Shield, Mail, Lock } from "lucide-react";
+import { toast } from "sonner";
 import { MobileFrame } from "@/components/MobileFrame";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/login")({
   component: Login,
@@ -10,6 +13,30 @@ export const Route = createFileRoute("/login")({
 
 function Login() {
   const nav = useNavigate();
+  const { signIn, session, loading } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!loading && session) nav({ to: "/home" });
+  }, [loading, session, nav]);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    const { error } = await signIn(email.trim(), password);
+    setBusy(false);
+    if (error) {
+      toast.error("Gagal masuk", { description: error });
+      return;
+    }
+    if (remember) localStorage.setItem("nmb_onboarded", "1");
+    toast.success("Selamat datang kembali 💙");
+    nav({ to: "/home" });
+  };
+
   return (
     <MobileFrame>
       <div className="min-h-screen flex flex-col p-7">
@@ -21,46 +48,35 @@ function Login() {
           <p className="text-muted-foreground text-sm">Masuk untuk lanjut menemukan ruang amanmu.</p>
         </div>
 
-        <form
-          className="mt-8 space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            nav({ to: "/home" });
-          }}
-        >
+        <form className="mt-8 space-y-4" onSubmit={submit}>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Email</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input className="pl-10 h-12 rounded-xl" placeholder="kamu@email.com" type="email" required />
+              <Input className="pl-10 h-12 rounded-xl" placeholder="kamu@email.com" type="email"
+                value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input className="pl-10 h-12 rounded-xl" placeholder="••••••••" type="password" required />
+              <Input className="pl-10 h-12 rounded-xl" placeholder="••••••••" type="password"
+                value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} />
             </div>
           </div>
-          <div className="text-right">
-            <a className="text-xs text-primary font-medium">Lupa password?</a>
-          </div>
-          <Button type="submit" variant="hero" size="xl" className="w-full">Masuk</Button>
+          <label className="flex items-center gap-2 text-xs">
+            <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)}
+              className="h-4 w-4 accent-primary" />
+            <span>Ingat saya — tetap masuk saat buka aplikasi</span>
+          </label>
+          <Button type="submit" variant="hero" size="xl" className="w-full" disabled={busy}>
+            {busy ? "Memproses..." : "Masuk"}
+          </Button>
         </form>
 
-        <div className="my-6 flex items-center gap-3">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground">atau</span>
-          <div className="flex-1 h-px bg-border" />
-        </div>
-
-        <Button variant="outlineHero" size="xl" className="w-full">
-          Lanjutkan dengan Google
-        </Button>
-
         <p className="text-center text-sm text-muted-foreground mt-auto pt-8">
-          Belum punya akun?{" "}
-          <Link to="/register" className="text-primary font-semibold">Daftar</Link>
+          Belum punya akun? <Link to="/register" className="text-primary font-semibold">Daftar</Link>
         </p>
       </div>
     </MobileFrame>
