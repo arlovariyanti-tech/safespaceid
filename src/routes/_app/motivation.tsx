@@ -209,7 +209,7 @@ function EmergencyComfort({ onClose }: { onClose: () => void }) {
         <div className="grid grid-cols-1 gap-2">
           <Link to="/emergency" className="p-4 rounded-2xl bg-card border border-border/60 flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-rose-100 flex items-center justify-center"><Phone className="h-5 w-5 text-rose-700" /></div>
-            <div className="flex-1"><p className="font-bold text-sm">Hubungi Mentor</p><p className="text-[11px] text-muted-foreground">Bicara dengan orang terpercaya</p></div>
+            <div className="flex-1"><p className="font-bold text-sm">Konsultasi Admin</p><p className="text-[11px] text-muted-foreground">Cerita ke admin via Instagram</p></div>
             <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </Link>
           <Link to="/diary" className="p-4 rounded-2xl bg-card border border-border/60 flex items-center gap-3">

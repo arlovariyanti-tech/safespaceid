@@ -106,7 +106,7 @@ function SelfCheck() {
             <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground mb-3">Aksi Cepat</h3>
             <div className="grid grid-cols-2 gap-3">
               <ActionLink to="/community" icon={Heart} label="Cari Dukungan" color="bg-rose-100 text-rose-700" />
-              <ActionLink to="/emergency" icon={Phone} label="Hubungi Mentor" color="bg-sky-100 text-sky-700" />
+              <ActionLink to="/emergency" icon={Phone} label="Konsultasi Admin" color="bg-sky-100 text-sky-700" />
               <ActionLink to="/motivation" icon={BookOpen} label="Baca Solusi" color="bg-amber-100 text-amber-700" />
               <ActionLink to="/diary" icon={NotebookPen} label="Mulai Safe Diary" color="bg-violet-100 text-violet-700" />
             </div>
