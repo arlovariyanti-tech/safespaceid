@@ -120,7 +120,7 @@ function Home() {
               <p className="font-bold">{activeChallenge ? activeChallenge.title : "Belum ada challenge aktif"}</p>
               <p className="text-xs text-muted-foreground">
                 {activeChallenge
-                  ? `Hari ${activeChallenge.current} dari ${activeChallenge.total}`
+                  ? `Hari ${Math.min(activeChallenge.current + 1, activeChallenge.total)} dari ${activeChallenge.total}`
                   : "Mulai challenge pertamamu sekarang"}
               </p>
             </div>
