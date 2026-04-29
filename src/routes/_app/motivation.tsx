@@ -31,10 +31,10 @@ const stories = [
 ];
 
 const audios = [
-  { title: "Afirmasi Pagi", duration: "3:12", color: "from-amber-100 to-orange-100" },
-  { title: "Calming Words sebelum Tidur", duration: "5:40", color: "from-indigo-100 to-violet-100" },
-  { title: "Saat Sedang Sedih", duration: "4:08", color: "from-blue-100 to-sky-100" },
-  { title: "Self Healing Pendek", duration: "2:55", color: "from-emerald-100 to-teal-100" },
+  { title: "Afirmasi Pagi", duration: "Pagi yang lembut", color: "from-amber-100 to-orange-100", youtubeId: "Jyy0ra2WcQQ", mood: "pagi" },
+  { title: "Calming Words sebelum Tidur", duration: "Sebelum tidur", color: "from-indigo-100 to-violet-100", youtubeId: "ZToicYcHIOU", mood: "tidur" },
+  { title: "Saat Sedang Sedih", duration: "Pelukan virtual", color: "from-blue-100 to-sky-100", youtubeId: "2OEL4P1Rz04", mood: "sedih" },
+  { title: "Self Healing Pendek", duration: "Healing singkat", color: "from-emerald-100 to-teal-100", youtubeId: "tybOi4hjZFQ", mood: "healing" },
 ];
 
 function Motivation() {
@@ -92,21 +92,45 @@ function Motivation() {
         {/* Audio motivation */}
         <section>
           <h2 className="font-bold mb-3 text-sm uppercase tracking-wider text-muted-foreground">🎧 Audio Healing</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {audios.map((a) => {
+          <p className="text-xs text-muted-foreground mb-3">Tekan play untuk mendengarkan langsung di sini.</p>
+          <div className="space-y-3">
+            {audios.map((a, i) => {
               const isPlaying = playing === a.title;
+              const liked = favs.includes(1000 + i);
               return (
-                <button
-                  key={a.title}
-                  onClick={() => setPlaying(isPlaying ? null : a.title)}
-                  className={`text-left p-4 rounded-2xl bg-gradient-to-br ${a.color} border border-white/60`}
-                >
-                  <div className="h-10 w-10 rounded-full bg-white/80 flex items-center justify-center mb-3">
-                    {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 fill-foreground" />}
+                <div key={a.title} className={`p-4 rounded-2xl bg-gradient-to-br ${a.color} border border-white/60`}>
+                  <div className="flex items-center gap-3 mb-2">
+                    <button
+                      onClick={() => setPlaying(isPlaying ? null : a.title)}
+                      className="h-11 w-11 rounded-full bg-white/90 flex items-center justify-center shadow-sm shrink-0"
+                      aria-label={isPlaying ? "Pause" : "Play"}
+                    >
+                      {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 fill-foreground ml-0.5" />}
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold leading-tight truncate">{a.title}</p>
+                      <p className="text-[11px] text-foreground/60 mt-0.5">{a.duration}</p>
+                    </div>
+                    <button
+                      onClick={() => setFavs(liked ? favs.filter((x) => x !== 1000 + i) : [...favs, 1000 + i])}
+                      aria-label="favorite"
+                      className="h-9 w-9 rounded-full bg-white/70 flex items-center justify-center"
+                    >
+                      <Heart className={`h-4 w-4 ${liked ? "fill-rose-500 text-rose-500" : "text-foreground/60"}`} />
+                    </button>
                   </div>
-                  <p className="text-sm font-bold leading-tight">{a.title}</p>
-                  <p className="text-[11px] text-foreground/60 mt-1">{a.duration}</p>
-                </button>
+                  {isPlaying && (
+                    <div className="rounded-xl overflow-hidden bg-black/80 aspect-video">
+                      <iframe
+                        className="w-full h-full"
+                        src={`https://www.youtube.com/embed/${a.youtubeId}?autoplay=1&rel=0`}
+                        title={a.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
