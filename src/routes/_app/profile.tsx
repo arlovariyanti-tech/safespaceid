@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PageHeader } from "@/components/MobileFrame";
-import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, PhoneCall, Bell, Lock } from "lucide-react";
+import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, MessageCircleHeart, Bell, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
@@ -15,7 +15,7 @@ const stats = [
 ];
 
 const menus = [
-  { to: "/emergency", label: "Emergency Contact", icon: PhoneCall },
+  { to: "/emergency", label: "Konsultasi Aman", icon: MessageCircleHeart },
   { label: "Notifikasi", icon: Bell },
   { label: "Privasi & Keamanan", icon: Lock },
   { label: "Pengaturan Akun", icon: Settings },
