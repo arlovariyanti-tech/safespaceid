@@ -238,7 +238,9 @@ function Edukasi() {
         {MATERI.map((m, i) => (
           <section
             key={m.slug}
-            ref={(el) => (sectionRefs.current[i] = el)}
+            ref={(el) => {
+              sectionRefs.current[i] = el;
+            }}
             data-idx={i}
             id={`materi-${m.no}`}
             className="scroll-mt-24"
