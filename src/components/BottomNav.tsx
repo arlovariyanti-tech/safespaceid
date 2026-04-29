@@ -1,17 +1,15 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, BookOpen, AlertTriangle, Users, User } from "lucide-react";
+import { Home, NotebookPen, Users, User } from "lucide-react";
 
 type NavItem = {
   to: string;
   label: string;
   icon: typeof Home;
-  primary?: boolean;
 };
 
 const items: NavItem[] = [
   { to: "/home", label: "Home", icon: Home },
-  { to: "/edukasi", label: "Edukasi", icon: BookOpen },
-  { to: "/report", label: "Report", icon: AlertTriangle, primary: true },
+  { to: "/diary", label: "Diary", icon: NotebookPen },
   { to: "/community", label: "Community", icon: Users },
   { to: "/profile", label: "Profile", icon: User },
 ];
@@ -24,27 +22,11 @@ export function BottomNav() {
         {items.map((it) => {
           const active = pathname === it.to;
           const Icon = it.icon;
-          if (it.primary) {
-            return (
-              <Link
-                key={it.to}
-                to={it.to as "/home"}
-                className="flex flex-col items-center -mt-7"
-              >
-                <div className="h-14 w-14 rounded-2xl bg-[image:var(--gradient-primary)] flex items-center justify-center shadow-[var(--shadow-glow)]">
-                  <Icon className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <span className="text-[10px] mt-1 font-semibold text-primary">
-                  {it.label}
-                </span>
-              </Link>
-            );
-          }
           return (
             <Link
               key={it.to}
               to={it.to as "/home"}
-              className="flex flex-col items-center gap-1 px-3 py-1.5"
+              className="flex flex-col items-center gap-1 px-4 py-1.5"
             >
               <Icon
                 className={`h-5 w-5 transition ${
