@@ -1,77 +1,96 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/MobileFrame";
-import { Phone, MessageCircle, AlertTriangle } from "lucide-react";
+import { Instagram, Heart, MessageCircleHeart, ShieldCheck, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/_app/emergency")({
-  component: Emergency,
+  component: KonsultasiAman,
 });
 
-const personal = [
-  { name: "Ibu", role: "Orang Tua", phone: "+62 812-3456-7890", color: "bg-rose-100 text-rose-700" },
-  { name: "Bu Sari", role: "Guru BK", phone: "+62 813-2222-1111", color: "bg-sky-100 text-sky-700" },
-  { name: "Pak Adi", role: "Wali Kelas", phone: "+62 821-9999-8888", color: "bg-emerald-100 text-emerald-700" },
-  { name: "Kak Lina", role: "Mentor", phone: "+62 856-7777-1234", color: "bg-violet-100 text-violet-700" },
+const IG_HANDLE = "selaaspeaks";
+const IG_URL = `https://instagram.com/${IG_HANDLE}`;
+
+const topics = [
+  { emoji: "💔", text: "Pengalaman bullying" },
+  { emoji: "🏫", text: "Rasa takut ke sekolah" },
+  { emoji: "🤝", text: "Masalah pertemanan" },
+  { emoji: "📱", text: "Cyberbullying" },
+  { emoji: "🪞", text: "Kehilangan percaya diri" },
+  { emoji: "🌀", text: "Overthinking" },
+  { emoji: "🌧️", text: "Merasa sendirian" },
+  { emoji: "👂", text: "Butuh tempat untuk didengar" },
 ];
 
-const hotlines = [
-  { name: "Kemen PPPA - SAPA 129", phone: "129" },
-  { name: "Into The Light Indonesia", phone: "119 ext 8" },
-  { name: "Halo Kemenkes", phone: "1500-567" },
-];
-
-function Emergency() {
+function KonsultasiAman() {
   return (
     <div>
-      <PageHeader title="Emergency Contact" subtitle="Hubungi siapapun saat kamu butuh." />
+      <PageHeader title="Konsultasi Aman" subtitle="Tempat aman untuk bercerita dan didengar." />
       <div className="p-5 space-y-5">
-        <div className="p-5 rounded-2xl bg-gradient-to-br from-rose-50 to-pink-100 border border-rose-200/60">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="h-5 w-5 text-rose-700" />
-            <h3 className="font-bold">Butuh bantuan segera?</h3>
+        {/* Hero card */}
+        <div className="p-6 rounded-3xl bg-gradient-to-br from-violet-100 via-pink-100 to-rose-100 border border-white/60">
+          <div className="h-12 w-12 rounded-2xl bg-white/80 backdrop-blur flex items-center justify-center mb-3">
+            <MessageCircleHeart className="h-6 w-6 text-rose-600" />
           </div>
-          <p className="text-xs text-foreground/70 mb-3">Tekan tombol di bawah untuk panggilan darurat ke kontak utama.</p>
-          <button className="w-full h-12 rounded-xl bg-rose-600 text-white font-semibold flex items-center justify-center gap-2">
-            <Phone className="h-4 w-4" /> Panggil Sekarang
-          </button>
+          <h2 className="text-xl font-bold leading-snug mb-2">Butuh teman untuk bercerita?</h2>
+          <p className="text-sm leading-relaxed text-foreground/75">
+            Kalau kamu sedang lelah, bingung, atau ingin berbagi cerita tentang bullying, perasaan, atau masalah yang kamu alami,
+            kamu tidak harus menghadapinya sendiri.
+          </p>
+          <p className="text-sm leading-relaxed text-foreground/75 mt-3">
+            Kamu bisa menghubungi admin <span className="font-semibold">No More Bully</span> melalui Instagram untuk konsultasi ringan,
+            berbagi cerita, dan mendapatkan dukungan.
+          </p>
         </div>
 
+        {/* IG handle highlight */}
+        <div className="p-5 rounded-3xl bg-card border border-border/60 text-center">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Instagram Konsultasi</p>
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Instagram className="h-5 w-5 text-pink-600" />
+            <p className="text-2xl font-black tracking-tight">@{IG_HANDLE}</p>
+          </div>
+          <a
+            href={IG_URL}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="w-full h-14 rounded-2xl bg-gradient-to-r from-fuchsia-500 via-pink-500 to-rose-500 text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-pink-500/30 active:scale-[0.98] transition"
+          >
+            <Instagram className="h-5 w-5" />
+            Hubungi via Instagram
+          </a>
+        </div>
+
+        {/* Safe message */}
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex gap-3">
+          <ShieldCheck className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
+          <p className="text-sm text-emerald-900 leading-snug">
+            Semua cerita akan diterima dengan <span className="font-semibold">empati, tanpa menghakimi.</span>
+          </p>
+        </div>
+
+        {/* Topics */}
         <section>
-          <h2 className="font-bold mb-3 text-sm uppercase tracking-wider text-muted-foreground">Kontak Pribadi</h2>
-          <div className="space-y-2">
-            {personal.map((p) => (
-              <div key={p.name} className="flex items-center gap-3 p-3 rounded-2xl bg-card border border-border/60">
-                <div className={`h-11 w-11 rounded-xl ${p.color} flex items-center justify-center font-bold`}>
-                  {p.name[0]}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-sm">{p.name}</p>
-                  <p className="text-xs text-muted-foreground">{p.role} · {p.phone}</p>
-                </div>
-                <button className="h-9 w-9 rounded-full bg-emerald-500 text-white flex items-center justify-center">
-                  <Phone className="h-4 w-4" />
-                </button>
-                <button className="h-9 w-9 rounded-full bg-sky-500 text-white flex items-center justify-center">
-                  <MessageCircle className="h-4 w-4" />
-                </button>
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Yang Bisa Kamu Konsultasikan</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {topics.map((t) => (
+              <div key={t.text} className="p-3 rounded-2xl bg-card border border-border/60 flex items-center gap-2">
+                <span className="text-xl">{t.emoji}</span>
+                <p className="text-xs font-medium leading-snug">{t.text}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section>
-          <h2 className="font-bold mb-3 text-sm uppercase tracking-wider text-muted-foreground">Hotline Bantuan</h2>
-          <div className="space-y-2">
-            {hotlines.map((h) => (
-              <div key={h.name} className="flex items-center justify-between p-4 rounded-2xl bg-card border border-border/60">
-                <div>
-                  <p className="font-semibold text-sm">{h.name}</p>
-                  <p className="text-xs text-muted-foreground">{h.phone}</p>
-                </div>
-                <button className="px-4 h-9 rounded-full bg-foreground text-background text-xs font-semibold">Hubungi</button>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* Closing note */}
+        <div className="p-5 rounded-3xl bg-foreground text-background text-center">
+          <Heart className="h-5 w-5 mx-auto mb-2 fill-rose-400 text-rose-400" />
+          <p className="text-sm font-semibold leading-snug">
+            Kamu berharga. Cerita kamu penting.
+          </p>
+          <p className="text-xs opacity-70 mt-1">Kami siap mendengarkan kapan pun kamu siap.</p>
+        </div>
       </div>
     </div>
   );
