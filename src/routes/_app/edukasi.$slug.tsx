@@ -55,7 +55,7 @@ const materials: Record<
         ],
       },
     ],
-    keyMessage: "Jika candaan membuat seseorang terluka berulang kali, itu bukan candaan — itu bullying.",
+    keyMessage: "Jika candaan membuat seseorang terluka, itu bukan lagi candaan.",
     example:
       "Contoh: Ara sering dipanggil dengan nama ejekan soal berat badannya oleh sekelompok teman. Meski awalnya terlihat seperti bercanda, Ara mulai takut pergi ke sekolah. Ini adalah bullying verbal.",
     quote: "Jika candaan membuat seseorang terluka, itu bukan lagi candaan.",
