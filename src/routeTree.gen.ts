@@ -15,7 +15,6 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppSelfCheckRouteImport } from './routes/_app/self-check'
-import { Route as AppReportRouteImport } from './routes/_app/report'
 import { Route as AppQuizRouteImport } from './routes/_app/quiz'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppMotivationRouteImport } from './routes/_app/motivation'
@@ -54,11 +53,6 @@ const IndexRoute = IndexRouteImport.update({
 const AppSelfCheckRoute = AppSelfCheckRouteImport.update({
   id: '/self-check',
   path: '/self-check',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppReportRoute = AppReportRouteImport.update({
-  id: '/report',
-  path: '/report',
   getParentRoute: () => AppRoute,
 } as any)
 const AppQuizRoute = AppQuizRouteImport.update({
@@ -126,7 +120,6 @@ export interface FileRoutesByFullPath {
   '/motivation': typeof AppMotivationRoute
   '/profile': typeof AppProfileRoute
   '/quiz': typeof AppQuizRoute
-  '/report': typeof AppReportRoute
   '/self-check': typeof AppSelfCheckRoute
   '/edukasi/$slug': typeof AppEdukasiSlugRoute
 }
@@ -144,7 +137,6 @@ export interface FileRoutesByTo {
   '/motivation': typeof AppMotivationRoute
   '/profile': typeof AppProfileRoute
   '/quiz': typeof AppQuizRoute
-  '/report': typeof AppReportRoute
   '/self-check': typeof AppSelfCheckRoute
   '/edukasi/$slug': typeof AppEdukasiSlugRoute
 }
@@ -164,7 +156,6 @@ export interface FileRoutesById {
   '/_app/motivation': typeof AppMotivationRoute
   '/_app/profile': typeof AppProfileRoute
   '/_app/quiz': typeof AppQuizRoute
-  '/_app/report': typeof AppReportRoute
   '/_app/self-check': typeof AppSelfCheckRoute
   '/_app/edukasi/$slug': typeof AppEdukasiSlugRoute
 }
@@ -184,7 +175,6 @@ export interface FileRouteTypes {
     | '/motivation'
     | '/profile'
     | '/quiz'
-    | '/report'
     | '/self-check'
     | '/edukasi/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -202,7 +192,6 @@ export interface FileRouteTypes {
     | '/motivation'
     | '/profile'
     | '/quiz'
-    | '/report'
     | '/self-check'
     | '/edukasi/$slug'
   id:
@@ -221,7 +210,6 @@ export interface FileRouteTypes {
     | '/_app/motivation'
     | '/_app/profile'
     | '/_app/quiz'
-    | '/_app/report'
     | '/_app/self-check'
     | '/_app/edukasi/$slug'
   fileRoutesById: FileRoutesById
@@ -276,13 +264,6 @@ declare module '@tanstack/react-router' {
       path: '/self-check'
       fullPath: '/self-check'
       preLoaderRoute: typeof AppSelfCheckRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/_app/report': {
-      id: '/_app/report'
-      path: '/report'
-      fullPath: '/report'
-      preLoaderRoute: typeof AppReportRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/quiz': {
@@ -380,7 +361,6 @@ interface AppRouteChildren {
   AppMotivationRoute: typeof AppMotivationRoute
   AppProfileRoute: typeof AppProfileRoute
   AppQuizRoute: typeof AppQuizRoute
-  AppReportRoute: typeof AppReportRoute
   AppSelfCheckRoute: typeof AppSelfCheckRoute
 }
 
@@ -394,7 +374,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppMotivationRoute: AppMotivationRoute,
   AppProfileRoute: AppProfileRoute,
   AppQuizRoute: AppQuizRoute,
-  AppReportRoute: AppReportRoute,
   AppSelfCheckRoute: AppSelfCheckRoute,
 }
 

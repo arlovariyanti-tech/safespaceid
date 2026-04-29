@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Bell, AlertTriangle, BookOpen, NotebookPen, Sparkles, Target, MessageCircleHeart, ClipboardCheck, Heart, ArrowRight } from "lucide-react";
+import { Bell, BookOpen, NotebookPen, Sparkles, Target, MessageCircleHeart, ClipboardCheck, Heart, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -77,16 +77,16 @@ function Home() {
 
       <div className="px-5 -mt-4">
         <Link
-          to="/report"
+          to="/emergency"
           className="flex items-center justify-between p-4 rounded-2xl bg-[image:var(--gradient-primary)] text-primary-foreground shadow-[var(--shadow-glow)]"
         >
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5" />
+              <MessageCircleHeart className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-bold">Laporkan Bullying</p>
-              <p className="text-xs opacity-90">Aman, cepat & rahasia</p>
+              <p className="font-bold">Konsultasi Aman</p>
+              <p className="text-xs opacity-90">Cerita ke admin via Instagram</p>
             </div>
           </div>
           <ArrowRight className="h-5 w-5" />
