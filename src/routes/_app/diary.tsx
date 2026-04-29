@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/MobileFrame";
 import { Button } from "@/components/ui/button";
-import { Lock, Plus, Star, Calendar, Sparkles, ShieldCheck, Phone, Trash2, Pencil, Search, X } from "lucide-react";
+import { Lock, Plus, Star, Calendar, Sparkles, Trash2, Pencil, Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -50,9 +50,6 @@ function friendlyDate(iso: string) {
 
 function Diary() {
   const { user } = useAuth();
-  const nav = useNavigate();
-  const [unlocked, setUnlocked] = useState(false);
-  const [pin, setPin] = useState("");
   const [entries, setEntries] = useState<Entry[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -66,7 +63,7 @@ function Diary() {
   const todayPrompt = prompts[new Date().getDate() % prompts.length];
 
   useEffect(() => {
-    if (!user || !unlocked) return;
+    if (!user) return;
     (async () => {
       setLoading(true);
       const { data, error } = await supabase
@@ -77,7 +74,7 @@ function Diary() {
       else setEntries((data as Entry[]) ?? []);
       setLoading(false);
     })();
-  }, [user, unlocked]);
+  }, [user]);
 
   // Draft autosave
   useEffect(() => {
@@ -151,32 +148,6 @@ function Diary() {
     setEntries(entries.map(x => x.id === e.id ? { ...x, is_favorite: !x.is_favorite } : x));
   };
 
-  if (!unlocked) {
-    return (
-      <div>
-        <PageHeader title="Safe Diary" subtitle="Privat, aman, hanya untukmu." />
-        <div className="p-5 space-y-5">
-          <div className="p-8 rounded-3xl bg-gradient-to-br from-violet-100 to-indigo-100 text-center space-y-3">
-            <div className="h-16 w-16 mx-auto rounded-2xl bg-white/70 flex items-center justify-center">
-              <Lock className="h-7 w-7 text-violet-700" />
-            </div>
-            <h2 className="font-bold text-lg">Buka Diary-mu</h2>
-            <p className="text-xs text-foreground/70">Masukkan PIN 4 digit untuk membuka ruang amanmu.</p>
-          </div>
-          <input
-            type="password" inputMode="numeric" maxLength={4} value={pin}
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-            placeholder="••••"
-            className="w-full text-center text-3xl tracking-[0.6em] py-4 rounded-2xl bg-card border border-border focus:outline-none focus:ring-2 focus:ring-primary/30"
-          />
-          <Button variant="hero" size="xl" className="w-full" disabled={pin.length !== 4} onClick={() => setUnlocked(true)}>
-            <ShieldCheck className="h-5 w-5" /> Buka Safe Diary
-          </Button>
-          <p className="text-[11px] text-center text-muted-foreground">PIN demo: ketik 4 angka apa saja</p>
-        </div>
-      </div>
-    );
-  }
 
   if (writing) {
     return (
