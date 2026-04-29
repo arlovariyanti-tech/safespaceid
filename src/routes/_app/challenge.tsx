@@ -179,7 +179,7 @@ function Challenge() {
             <div className="h-2 bg-white/70 rounded-full overflow-hidden mb-2">
               <div className="h-full bg-foreground rounded-full transition-all" style={{ width: `${pct}%` }} />
             </div>
-            <p className="text-xs font-semibold">Hari {cur} dari {selected.days}</p>
+            <p className="text-xs font-semibold">Hari {p?.completed ? selected.days : Math.min(cur + 1, selected.days)} dari {selected.days}</p>
           </div>
 
           <div className="space-y-2">
@@ -276,7 +276,7 @@ function Challenge() {
                     <div>
                       <p className="font-bold">{c.title}</p>
                       <p className="text-xs text-foreground/60">
-                        {p ? (p.completed ? `🏅 Selesai` : `Hari ${p.current_day}/${c.days}`) : `${c.days} hari · ${c.category}`}
+                        {p ? (p.completed ? `🏅 Selesai` : `Hari ${Math.min(p.current_day + 1, c.days)}/${c.days}`) : `${c.days} hari · ${c.category}`}
                       </p>
                     </div>
                     {p?.completed ? <Award className="h-5 w-5 text-amber-700" /> : <Target className="h-5 w-5 text-foreground/70" />}
