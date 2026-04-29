@@ -41,8 +41,8 @@ export const Route = createRootRoute({
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "No More Bully" },
       { name: "twitter:description", content: "No More Bully adalah aplikasi edukasi dan dukungan emosional yang dirancang untuk membantu remaja memahami, mencegah, dan menghadapi bullying dengan cara yang l" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/etZEEahDDLdNXwZIlmnK9XoUS2T2/social-images/social-1777279203860-WhatsApp_Image_2026-04-27_at_15.38.40_(1).webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/etZEEahDDLdNXwZIlmnK9XoUS2T2/social-images/social-1777279203860-WhatsApp_Image_2026-04-27_at_15.38.40_(1).webp" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/etZEEahDDLdNXwZIlmnK9XoUS2T2/social-images/social-1777454898804-WhatsApp_Image_2026-04-29_at_16.27.38.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/etZEEahDDLdNXwZIlmnK9XoUS2T2/social-images/social-1777454898804-WhatsApp_Image_2026-04-29_at_16.27.38.webp" },
     ],
     links: [
       {
