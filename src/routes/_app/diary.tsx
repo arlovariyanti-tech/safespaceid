@@ -307,7 +307,7 @@ function Diary() {
 
         <div className="pt-2 grid grid-cols-2 gap-2">
           <Link to="/emergency" className="text-center text-xs font-semibold py-3 rounded-xl bg-card border border-border flex items-center justify-center gap-1">
-            <Phone className="h-3 w-3" /> Butuh Bantuan
+            💬 Konsultasi
           </Link>
           <button onClick={() => { setUnlocked(false); setPin(""); nav({ to: "/home" }); }}
             className="text-center text-xs font-semibold py-3 rounded-xl bg-card border border-border">
