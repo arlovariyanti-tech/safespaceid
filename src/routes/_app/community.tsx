@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PageHeader } from "@/components/MobileFrame";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Plus, Flag, X, Sparkles } from "lucide-react";
+import { Heart, MessageCircle, Plus, Flag, X, Sparkles, ImagePlus, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -17,7 +17,8 @@ const moodOptions = ["😊", "😔", "😰", "😡", "😌", "🤍"];
 type Post = {
   id: string; user_id: string; content: string; category: string;
   mood: string | null; is_anonymous: boolean; created_at: string;
-  profile?: { display_name: string | null } | null;
+  image_url: string | null;
+  profile?: { display_name: string | null; avatar_url: string | null } | null;
   support_count: number; comment_count: number; user_supported: boolean;
 };
 type Comment = { id: string; content: string; is_anonymous: boolean; created_at: string; user_id: string; profile?: { display_name: string | null } | null };
@@ -43,6 +44,9 @@ function Community() {
   const [category, setCategory] = useState("Perasaan Hari Ini");
   const [mood, setMood] = useState<string | null>(null);
   const [anon, setAnon] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [posting, setPosting] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -54,7 +58,7 @@ function Community() {
 
     if (!postsData) { setLoading(false); return; }
     const userIds = [...new Set(postsData.map((p: any) => p.user_id))];
-    const { data: profs } = await supabase.from("profiles").select("id, display_name").in("id", userIds);
+    const { data: profs } = await supabase.from("profiles").select("id, display_name, avatar_url").in("id", userIds);
     const { data: supports } = await supabase.from("community_supports").select("post_id, user_id");
     const { data: comments } = await supabase.from("community_comments").select("post_id");
 
@@ -81,13 +85,24 @@ function Community() {
   useEffect(() => { load(); }, [user]);
 
   const submit = async () => {
-    if (!text.trim() || !user) return;
+    if ((!text.trim() && !imageFile) || !user) return;
+    setPosting(true);
+    let image_url: string | null = null;
+    if (imageFile) {
+      const ext = imageFile.name.split(".").pop() || "jpg";
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const up = await supabase.storage.from("community").upload(path, imageFile, { contentType: imageFile.type });
+      if (up.error) { setPosting(false); return toast.error("Upload gambar gagal"); }
+      image_url = supabase.storage.from("community").getPublicUrl(path).data.publicUrl;
+    }
     const { error } = await supabase.from("community_posts").insert({
-      user_id: user.id, content: text.trim(), category, mood, is_anonymous: anon,
+      user_id: user.id, content: text.trim(), category, mood, is_anonymous: anon, image_url,
     });
+    setPosting(false);
     if (error) return toast.error("Gagal memposting");
     toast.success("Ceritamu dibagikan 🤍");
     setText(""); setMood(null); setAnon(false); setCategory("Perasaan Hari Ini");
+    setImageFile(null); setImagePreview(null);
     setShowCompose(false);
     load();
   };
