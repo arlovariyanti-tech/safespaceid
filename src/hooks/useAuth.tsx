@@ -18,6 +18,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Apply persisted theme on first mount
+    if (typeof document !== "undefined") {
+      const dark = localStorage.getItem("nmb_theme") === "dark";
+      document.documentElement.classList.toggle("dark", dark);
+    }
     // Listener MUST be set before getSession per Supabase docs
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);

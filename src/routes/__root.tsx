@@ -1,6 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/hooks/useAuth";
 import { Toaster } from "@/components/ui/sonner";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 import appCss from "../styles.css?url";
 
@@ -30,7 +31,11 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "theme-color", content: "#8b5cf6" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: "No More Bully" },
       { title: "No More Bully" },
       { name: "description", content: "No More Bully adalah aplikasi edukasi dan dukungan emosional yang dirancang untuk membantu remaja memahami, mencegah, dan menghadapi bullying dengan cara yang l" },
       { name: "author", content: "Lovable" },
@@ -45,10 +50,10 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/etZEEahDDLdNXwZIlmnK9XoUS2T2/social-images/social-1777454898804-WhatsApp_Image_2026-04-29_at_16.27.38.webp" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "icon", href: "/icon-512.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/icon-512.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -74,6 +79,7 @@ function RootComponent() {
   return (
     <AuthProvider>
       <Outlet />
+      <InstallPrompt />
       <Toaster />
     </AuthProvider>
   );

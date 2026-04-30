@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PageHeader } from "@/components/MobileFrame";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Plus, Flag, X, Sparkles } from "lucide-react";
+import { Heart, MessageCircle, Plus, Flag, X, Sparkles, ImagePlus, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -17,7 +17,8 @@ const moodOptions = ["😊", "😔", "😰", "😡", "😌", "🤍"];
 type Post = {
   id: string; user_id: string; content: string; category: string;
   mood: string | null; is_anonymous: boolean; created_at: string;
-  profile?: { display_name: string | null } | null;
+  image_url: string | null;
+  profile?: { display_name: string | null; avatar_url: string | null } | null;
   support_count: number; comment_count: number; user_supported: boolean;
 };
 type Comment = { id: string; content: string; is_anonymous: boolean; created_at: string; user_id: string; profile?: { display_name: string | null } | null };
@@ -43,6 +44,9 @@ function Community() {
   const [category, setCategory] = useState("Perasaan Hari Ini");
   const [mood, setMood] = useState<string | null>(null);
   const [anon, setAnon] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [posting, setPosting] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -54,7 +58,7 @@ function Community() {
 
     if (!postsData) { setLoading(false); return; }
     const userIds = [...new Set(postsData.map((p: any) => p.user_id))];
-    const { data: profs } = await supabase.from("profiles").select("id, display_name").in("id", userIds);
+    const { data: profs } = await supabase.from("profiles").select("id, display_name, avatar_url").in("id", userIds);
     const { data: supports } = await supabase.from("community_supports").select("post_id, user_id");
     const { data: comments } = await supabase.from("community_comments").select("post_id");
 
@@ -81,13 +85,24 @@ function Community() {
   useEffect(() => { load(); }, [user]);
 
   const submit = async () => {
-    if (!text.trim() || !user) return;
+    if ((!text.trim() && !imageFile) || !user) return;
+    setPosting(true);
+    let image_url: string | null = null;
+    if (imageFile) {
+      const ext = imageFile.name.split(".").pop() || "jpg";
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const up = await supabase.storage.from("community").upload(path, imageFile, { contentType: imageFile.type });
+      if (up.error) { setPosting(false); return toast.error("Upload gambar gagal"); }
+      image_url = supabase.storage.from("community").getPublicUrl(path).data.publicUrl;
+    }
     const { error } = await supabase.from("community_posts").insert({
-      user_id: user.id, content: text.trim(), category, mood, is_anonymous: anon,
+      user_id: user.id, content: text.trim(), category, mood, is_anonymous: anon, image_url,
     });
+    setPosting(false);
     if (error) return toast.error("Gagal memposting");
     toast.success("Ceritamu dibagikan 🤍");
     setText(""); setMood(null); setAnon(false); setCategory("Perasaan Hari Ini");
+    setImageFile(null); setImagePreview(null);
     setShowCompose(false);
     load();
   };
@@ -171,8 +186,12 @@ function Community() {
         {filtered.map((p) => (
           <article key={p.id} className="p-4 rounded-2xl bg-card border border-border/60 space-y-3">
             <div className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-full bg-[image:var(--gradient-primary)] flex items-center justify-center text-primary-foreground font-bold text-sm">
-                {p.is_anonymous ? "🌸" : (p.profile?.display_name?.[0] ?? "?").toUpperCase()}
+              <div className="h-9 w-9 rounded-full overflow-hidden bg-[image:var(--gradient-primary)] flex items-center justify-center text-primary-foreground font-bold text-sm">
+                {p.is_anonymous
+                  ? "🌸"
+                  : p.profile?.avatar_url
+                    ? <img src={p.profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                    : (p.profile?.display_name?.[0] ?? "?").toUpperCase()}
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold">{p.is_anonymous ? "Anonim" : (p.profile?.display_name ?? "Sahabat")}</p>
@@ -181,7 +200,10 @@ function Community() {
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">{p.category}</span>
               {p.mood && <span className="text-base">{p.mood}</span>}
             </div>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{p.content}</p>
+            {p.content && <p className="text-sm leading-relaxed whitespace-pre-wrap">{p.content}</p>}
+            {p.image_url && (
+              <img src={p.image_url} alt="post" loading="lazy" className="w-full rounded-xl border border-border/60 max-h-96 object-cover" />
+            )}
             <div className="flex items-center gap-4 pt-1 text-xs text-muted-foreground">
               <button onClick={() => toggleSupport(p)} className={`flex items-center gap-1.5 ${p.user_supported ? "text-rose-500" : "hover:text-primary"}`}>
                 <Heart className={`h-4 w-4 ${p.user_supported ? "fill-rose-500" : ""}`} /> {p.support_count}
@@ -203,6 +225,9 @@ function Community() {
           category={category} setCategory={setCategory}
           mood={mood} setMood={setMood}
           anon={anon} setAnon={setAnon}
+          imageFile={imageFile} setImageFile={setImageFile}
+          imagePreview={imagePreview} setImagePreview={setImagePreview}
+          posting={posting}
           onClose={() => setShowCompose(false)}
           onSubmit={submit}
         />
@@ -225,7 +250,15 @@ function StatCard({ emoji, n, label }: { emoji: string; n: number; label: string
   );
 }
 
-function ComposeModal({ text, setText, category, setCategory, mood, setMood, anon, setAnon, onClose, onSubmit }: any) {
+function ComposeModal({ text, setText, category, setCategory, mood, setMood, anon, setAnon, imageFile, setImageFile, imagePreview, setImagePreview, posting, onClose, onSubmit }: any) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const onPickImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) return toast.error("Maks 5MB");
+    setImageFile(f);
+    setImagePreview(URL.createObjectURL(f));
+  };
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center p-0 sm:p-4">
       <div className="w-full max-w-[440px] bg-background rounded-t-3xl sm:rounded-3xl p-5 space-y-4 max-h-[92vh] overflow-y-auto">
@@ -234,8 +267,26 @@ function ComposeModal({ text, setText, category, setCategory, mood, setMood, ano
           <button onClick={onClose} className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"><X className="h-4 w-4" /></button>
         </div>
         <textarea value={text} onChange={(e) => setText(e.target.value)}
-          placeholder="Apa yang ingin kamu bagikan hari ini?" rows={5}
+          placeholder="Apa yang ingin kamu bagikan hari ini?" rows={4}
           className="w-full p-4 rounded-2xl border border-border bg-card text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" />
+
+        {imagePreview ? (
+          <div className="relative">
+            <img src={imagePreview} alt="preview" className="w-full max-h-64 object-cover rounded-2xl border border-border" />
+            <button onClick={() => { setImageFile(null); setImagePreview(null); }}
+              className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/70 text-white flex items-center justify-center">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => fileRef.current?.click()}
+            className="w-full h-20 rounded-2xl border-2 border-dashed border-border text-xs text-muted-foreground flex flex-col items-center justify-center gap-1 hover:border-primary hover:text-primary transition">
+            <ImagePlus className="h-5 w-5" />
+            Tambahkan foto (opsional)
+          </button>
+        )}
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPickImage} />
+
         <div>
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Kategori</p>
           <div className="flex flex-wrap gap-1.5">
@@ -262,8 +313,8 @@ function ComposeModal({ text, setText, category, setCategory, mood, setMood, ano
           <input type="checkbox" checked={anon} onChange={(e) => setAnon(e.target.checked)} className="h-4 w-4 accent-primary" />
           <span>Posting sebagai anonim 🌸</span>
         </label>
-        <Button variant="hero" size="xl" className="w-full" disabled={!text.trim()} onClick={onSubmit}>
-          Posting Sekarang
+        <Button variant="hero" size="xl" className="w-full" disabled={posting || (!text.trim() && !imageFile)} onClick={onSubmit}>
+          {posting ? <><Loader2 className="h-4 w-4 animate-spin" /> Mengirim…</> : "Posting Sekarang"}
         </Button>
       </div>
     </div>

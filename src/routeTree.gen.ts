@@ -24,6 +24,9 @@ import { Route as AppEdukasiRouteImport } from './routes/_app/edukasi'
 import { Route as AppDiaryRouteImport } from './routes/_app/diary'
 import { Route as AppCommunityRouteImport } from './routes/_app/community'
 import { Route as AppChallengeRouteImport } from './routes/_app/challenge'
+import { Route as AppProfileSettingsRouteImport } from './routes/_app/profile.settings'
+import { Route as AppProfilePrivacyRouteImport } from './routes/_app/profile.privacy'
+import { Route as AppProfileEditRouteImport } from './routes/_app/profile.edit'
 import { Route as AppEdukasiSlugRouteImport } from './routes/_app/edukasi.$slug'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -100,6 +103,21 @@ const AppChallengeRoute = AppChallengeRouteImport.update({
   path: '/challenge',
   getParentRoute: () => AppRoute,
 } as any)
+const AppProfileSettingsRoute = AppProfileSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppProfileRoute,
+} as any)
+const AppProfilePrivacyRoute = AppProfilePrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => AppProfileRoute,
+} as any)
+const AppProfileEditRoute = AppProfileEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppProfileRoute,
+} as any)
 const AppEdukasiSlugRoute = AppEdukasiSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -118,10 +136,13 @@ export interface FileRoutesByFullPath {
   '/emergency': typeof AppEmergencyRoute
   '/home': typeof AppHomeRoute
   '/motivation': typeof AppMotivationRoute
-  '/profile': typeof AppProfileRoute
+  '/profile': typeof AppProfileRouteWithChildren
   '/quiz': typeof AppQuizRoute
   '/self-check': typeof AppSelfCheckRoute
   '/edukasi/$slug': typeof AppEdukasiSlugRoute
+  '/profile/edit': typeof AppProfileEditRoute
+  '/profile/privacy': typeof AppProfilePrivacyRoute
+  '/profile/settings': typeof AppProfileSettingsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -135,10 +156,13 @@ export interface FileRoutesByTo {
   '/emergency': typeof AppEmergencyRoute
   '/home': typeof AppHomeRoute
   '/motivation': typeof AppMotivationRoute
-  '/profile': typeof AppProfileRoute
+  '/profile': typeof AppProfileRouteWithChildren
   '/quiz': typeof AppQuizRoute
   '/self-check': typeof AppSelfCheckRoute
   '/edukasi/$slug': typeof AppEdukasiSlugRoute
+  '/profile/edit': typeof AppProfileEditRoute
+  '/profile/privacy': typeof AppProfilePrivacyRoute
+  '/profile/settings': typeof AppProfileSettingsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -154,10 +178,13 @@ export interface FileRoutesById {
   '/_app/emergency': typeof AppEmergencyRoute
   '/_app/home': typeof AppHomeRoute
   '/_app/motivation': typeof AppMotivationRoute
-  '/_app/profile': typeof AppProfileRoute
+  '/_app/profile': typeof AppProfileRouteWithChildren
   '/_app/quiz': typeof AppQuizRoute
   '/_app/self-check': typeof AppSelfCheckRoute
   '/_app/edukasi/$slug': typeof AppEdukasiSlugRoute
+  '/_app/profile/edit': typeof AppProfileEditRoute
+  '/_app/profile/privacy': typeof AppProfilePrivacyRoute
+  '/_app/profile/settings': typeof AppProfileSettingsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -177,6 +204,9 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/self-check'
     | '/edukasi/$slug'
+    | '/profile/edit'
+    | '/profile/privacy'
+    | '/profile/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -194,6 +224,9 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/self-check'
     | '/edukasi/$slug'
+    | '/profile/edit'
+    | '/profile/privacy'
+    | '/profile/settings'
   id:
     | '__root__'
     | '/'
@@ -212,6 +245,9 @@ export interface FileRouteTypes {
     | '/_app/quiz'
     | '/_app/self-check'
     | '/_app/edukasi/$slug'
+    | '/_app/profile/edit'
+    | '/_app/profile/privacy'
+    | '/_app/profile/settings'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -329,6 +365,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppChallengeRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/profile/settings': {
+      id: '/_app/profile/settings'
+      path: '/settings'
+      fullPath: '/profile/settings'
+      preLoaderRoute: typeof AppProfileSettingsRouteImport
+      parentRoute: typeof AppProfileRoute
+    }
+    '/_app/profile/privacy': {
+      id: '/_app/profile/privacy'
+      path: '/privacy'
+      fullPath: '/profile/privacy'
+      preLoaderRoute: typeof AppProfilePrivacyRouteImport
+      parentRoute: typeof AppProfileRoute
+    }
+    '/_app/profile/edit': {
+      id: '/_app/profile/edit'
+      path: '/edit'
+      fullPath: '/profile/edit'
+      preLoaderRoute: typeof AppProfileEditRouteImport
+      parentRoute: typeof AppProfileRoute
+    }
     '/_app/edukasi/$slug': {
       id: '/_app/edukasi/$slug'
       path: '/$slug'
@@ -351,6 +408,22 @@ const AppEdukasiRouteWithChildren = AppEdukasiRoute._addFileChildren(
   AppEdukasiRouteChildren,
 )
 
+interface AppProfileRouteChildren {
+  AppProfileEditRoute: typeof AppProfileEditRoute
+  AppProfilePrivacyRoute: typeof AppProfilePrivacyRoute
+  AppProfileSettingsRoute: typeof AppProfileSettingsRoute
+}
+
+const AppProfileRouteChildren: AppProfileRouteChildren = {
+  AppProfileEditRoute: AppProfileEditRoute,
+  AppProfilePrivacyRoute: AppProfilePrivacyRoute,
+  AppProfileSettingsRoute: AppProfileSettingsRoute,
+}
+
+const AppProfileRouteWithChildren = AppProfileRoute._addFileChildren(
+  AppProfileRouteChildren,
+)
+
 interface AppRouteChildren {
   AppChallengeRoute: typeof AppChallengeRoute
   AppCommunityRoute: typeof AppCommunityRoute
@@ -359,7 +432,7 @@ interface AppRouteChildren {
   AppEmergencyRoute: typeof AppEmergencyRoute
   AppHomeRoute: typeof AppHomeRoute
   AppMotivationRoute: typeof AppMotivationRoute
-  AppProfileRoute: typeof AppProfileRoute
+  AppProfileRoute: typeof AppProfileRouteWithChildren
   AppQuizRoute: typeof AppQuizRoute
   AppSelfCheckRoute: typeof AppSelfCheckRoute
 }
@@ -372,7 +445,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppEmergencyRoute: AppEmergencyRoute,
   AppHomeRoute: AppHomeRoute,
   AppMotivationRoute: AppMotivationRoute,
-  AppProfileRoute: AppProfileRoute,
+  AppProfileRoute: AppProfileRouteWithChildren,
   AppQuizRoute: AppQuizRoute,
   AppSelfCheckRoute: AppSelfCheckRoute,
 }
