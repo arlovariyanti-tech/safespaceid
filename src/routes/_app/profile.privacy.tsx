@@ -30,7 +30,7 @@ function Privacy() {
     })();
   }, [user]);
 
-  const update = async (patch: Record<string, boolean>) => {
+  const update = async (patch: { is_private?: boolean; allow_anonymous?: boolean; allow_comments?: boolean }) => {
     if (!user) return;
     const { error } = await supabase.from("profiles").update(patch).eq("id", user.id);
     if (error) toast.error(error.message);
@@ -39,7 +39,7 @@ function Privacy() {
 
   return (
     <div>
-      <PageHeader title="Privasi & Keamanan" left={<Link to="/profile" className="h-9 w-9 rounded-full bg-muted flex items-center justify-center"><ArrowLeft className="h-4 w-4" /></Link>} />
+      <PageHeader title="Privasi & Keamanan" back={<Link to="/profile" className="h-9 w-9 rounded-full bg-muted flex items-center justify-center"><ArrowLeft className="h-4 w-4" /></Link>} />
       <div className="p-5 space-y-4">
         <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200/60 flex items-start gap-3">
           <ShieldCheck className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />

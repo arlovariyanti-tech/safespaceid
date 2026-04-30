@@ -72,7 +72,7 @@ function Settings() {
 
   return (
     <div>
-      <PageHeader title="Pengaturan Akun" left={<Link to="/profile" className="h-9 w-9 rounded-full bg-muted flex items-center justify-center"><ArrowLeft className="h-4 w-4" /></Link>} />
+      <PageHeader title="Pengaturan Akun" back={<Link to="/profile" className="h-9 w-9 rounded-full bg-muted flex items-center justify-center"><ArrowLeft className="h-4 w-4" /></Link>} />
       <div className="p-5 space-y-4">
         <Section title="Tampilan">
           <button onClick={toggleDark} className="w-full flex items-center justify-between p-4">

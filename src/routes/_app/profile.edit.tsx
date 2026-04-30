@@ -80,7 +80,7 @@ function EditProfile() {
 
   return (
     <div>
-      <PageHeader title="Edit Profil" left={<Link to="/profile" className="h-9 w-9 rounded-full bg-muted flex items-center justify-center"><ArrowLeft className="h-4 w-4" /></Link>} />
+      <PageHeader title="Edit Profil" back={<Link to="/profile" className="h-9 w-9 rounded-full bg-muted flex items-center justify-center"><ArrowLeft className="h-4 w-4" /></Link>} />
       {loading ? (
         <div className="p-10 text-center text-sm text-muted-foreground">Memuat…</div>
       ) : (
