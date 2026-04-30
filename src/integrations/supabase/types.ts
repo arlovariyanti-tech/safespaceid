@@ -91,6 +91,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          image_url: string | null
           is_anonymous: boolean
           mood: string | null
           user_id: string
@@ -100,6 +101,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          image_url?: string | null
           is_anonymous?: boolean
           mood?: string | null
           user_id: string
@@ -109,6 +111,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          image_url?: string | null
           is_anonymous?: boolean
           mood?: string | null
           user_id?: string
@@ -221,25 +224,40 @@ export type Database = {
       }
       profiles: {
         Row: {
+          allow_anonymous: boolean
+          allow_comments: boolean
           avatar_url: string | null
+          bio: string | null
           created_at: string
           display_name: string | null
           id: string
+          is_private: boolean
           updated_at: string
+          username: string | null
         }
         Insert: {
+          allow_anonymous?: boolean
+          allow_comments?: boolean
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           display_name?: string | null
           id: string
+          is_private?: boolean
           updated_at?: string
+          username?: string | null
         }
         Update: {
+          allow_anonymous?: boolean
+          allow_comments?: boolean
           avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
+          is_private?: boolean
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
