@@ -1,81 +1,93 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/MobileFrame";
-import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, MessageCircleHeart, Bell, Lock } from "lucide-react";
+import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, MessageCircleHeart, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/profile")({
   component: Profile,
 });
 
-const stats = [
-  { label: "Diary", value: "–", icon: NotebookPen },
-  { label: "Challenge", value: "–", icon: Target },
-  { label: "Badge", value: "–", icon: Award },
-];
+type ProfileRow = { display_name: string | null; avatar_url: string | null; bio: string | null; username: string | null };
 
 const menus = [
   { to: "/emergency", label: "Konsultasi Aman", icon: MessageCircleHeart },
-  { label: "Notifikasi", icon: Bell },
-  { label: "Privasi & Keamanan", icon: Lock },
-  { label: "Pengaturan Akun", icon: Settings },
+  { to: "/profile/privacy", label: "Privasi & Keamanan", icon: Lock },
+  { to: "/profile/settings", label: "Pengaturan Akun", icon: Settings },
 ] as const;
 
 function Profile() {
   const nav = useNavigate();
   const { user, signOut } = useAuth();
-  const name = (user?.user_metadata?.display_name as string) || user?.email?.split("@")[0] || "Sahabat";
+  const [profile, setProfile] = useState<ProfileRow | null>(null);
+  const [counts, setCounts] = useState({ diary: 0, day: 0, total: 7 });
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const [{ data: p }, { count: diaryCount }, { data: ch }] = await Promise.all([
+        supabase.from("profiles").select("display_name, avatar_url, bio, username").eq("id", user.id).maybeSingle(),
+        supabase.from("diary_entries").select("*", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("challenge_progress").select("current_day, total_days").eq("user_id", user.id).limit(1).maybeSingle(),
+      ]);
+      setProfile(p as any);
+      setCounts({ diary: diaryCount ?? 0, day: ch?.current_day ?? 0, total: ch?.total_days ?? 7 });
+    })();
+  }, [user]);
+
+  const name = profile?.display_name || (user?.user_metadata?.display_name as string) || user?.email?.split("@")[0] || "Sahabat";
   const initial = name[0]?.toUpperCase() ?? "S";
+  const pct = counts.total ? Math.round((counts.day / counts.total) * 100) : 0;
+
   return (
     <div>
       <PageHeader title="Profile" />
       <div className="p-5 space-y-5">
         <div className="flex flex-col items-center text-center pt-2">
-          <div className="h-24 w-24 rounded-3xl bg-[image:var(--gradient-primary)] flex items-center justify-center text-3xl font-black text-primary-foreground shadow-[var(--shadow-glow)]">
-            {initial}
+          <div className="h-24 w-24 rounded-3xl overflow-hidden bg-[image:var(--gradient-primary)] flex items-center justify-center text-3xl font-black text-primary-foreground shadow-[var(--shadow-glow)]">
+            {profile?.avatar_url
+              ? <img src={profile.avatar_url} alt={name} className="h-full w-full object-cover" />
+              : initial}
           </div>
           <h2 className="text-xl font-bold mt-3">{name}</h2>
+          {profile?.username && <p className="text-xs text-muted-foreground">@{profile.username}</p>}
           <p className="text-sm text-muted-foreground">{user?.email}</p>
-          <button className="mt-3 px-4 h-8 rounded-full border border-border text-xs font-medium">Edit Profil</button>
+          {profile?.bio && <p className="text-xs text-foreground/70 mt-2 max-w-xs">{profile.bio}</p>}
+          <Link to="/profile/edit" className="mt-3 px-4 h-8 rounded-full border border-border text-xs font-medium inline-flex items-center">
+            Edit Profil
+          </Link>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          {stats.map((s) => (
-            <div key={s.label} className="p-4 rounded-2xl bg-card border border-border/60 text-center">
-              <s.icon className="h-5 w-5 mx-auto text-primary mb-1" />
-              <p className="text-xl font-bold">{s.value}</p>
-              <p className="text-[10px] text-muted-foreground">{s.label}</p>
-            </div>
-          ))}
+          <Stat icon={NotebookPen} value={counts.diary} label="Diary" />
+          <Stat icon={Target} value={counts.day} label="Challenge" />
+          <Stat icon={Award} value={Math.floor(counts.diary / 5)} label="Badge" />
         </div>
 
-        <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-100 border border-emerald-200/60">
-          <p className="text-xs text-foreground/70 mb-1">Progress Challenge</p>
-          <p className="font-bold mb-2">7 Hari Tanpa Menghina</p>
-          <div className="h-2 bg-white/70 rounded-full overflow-hidden">
-            <div className="h-full w-[42%] bg-emerald-500 rounded-full" />
+        {counts.day > 0 && (
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-100 border border-emerald-200/60">
+            <p className="text-xs text-foreground/70 mb-1">Progress Challenge</p>
+            <p className="font-bold mb-2">7 Hari Tanpa Menghina</p>
+            <div className="h-2 bg-white/70 rounded-full overflow-hidden">
+              <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">Hari {counts.day} dari {counts.total}</p>
           </div>
-          <p className="text-[10px] text-muted-foreground mt-1">Hari 3 dari 7</p>
-        </div>
+        )}
 
         <div className="rounded-2xl bg-card border border-border/60 overflow-hidden">
-          {menus.map((m, i) => {
-            const inner = (
-              <>
-                <div className="flex items-center gap-3">
-                  <m.icon className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-sm font-medium">{m.label}</span>
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </>
-            );
-            const cls = `w-full flex items-center justify-between px-4 h-14 ${i !== menus.length - 1 ? "border-b border-border/60" : ""}`;
-            return "to" in m && m.to ? (
-              <Link key={m.label} to={m.to} className={cls}>{inner}</Link>
-            ) : (
-              <button key={m.label} className={cls}>{inner}</button>
-            );
-          })}
+          {menus.map((m, i) => (
+            <Link key={m.label} to={m.to}
+              className={`w-full flex items-center justify-between px-4 h-14 ${i !== menus.length - 1 ? "border-b border-border/60" : ""}`}>
+              <div className="flex items-center gap-3">
+                <m.icon className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm font-medium">{m.label}</span>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </Link>
+          ))}
         </div>
 
         <button
@@ -87,6 +99,16 @@ function Profile() {
 
         <p className="text-center text-[10px] text-muted-foreground pt-2">No More Bully · v1.0</p>
       </div>
+    </div>
+  );
+}
+
+function Stat({ icon: Icon, value, label }: { icon: any; value: number; label: string }) {
+  return (
+    <div className="p-4 rounded-2xl bg-card border border-border/60 text-center">
+      <Icon className="h-5 w-5 mx-auto text-primary mb-1" />
+      <p className="text-xl font-bold">{value}</p>
+      <p className="text-[10px] text-muted-foreground">{label}</p>
     </div>
   );
 }
