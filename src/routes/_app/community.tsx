@@ -186,8 +186,12 @@ function Community() {
         {filtered.map((p) => (
           <article key={p.id} className="p-4 rounded-2xl bg-card border border-border/60 space-y-3">
             <div className="flex items-center gap-2">
-              <div className="h-9 w-9 rounded-full bg-[image:var(--gradient-primary)] flex items-center justify-center text-primary-foreground font-bold text-sm">
-                {p.is_anonymous ? "🌸" : (p.profile?.display_name?.[0] ?? "?").toUpperCase()}
+              <div className="h-9 w-9 rounded-full overflow-hidden bg-[image:var(--gradient-primary)] flex items-center justify-center text-primary-foreground font-bold text-sm">
+                {p.is_anonymous
+                  ? "🌸"
+                  : p.profile?.avatar_url
+                    ? <img src={p.profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                    : (p.profile?.display_name?.[0] ?? "?").toUpperCase()}
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold">{p.is_anonymous ? "Anonim" : (p.profile?.display_name ?? "Sahabat")}</p>
@@ -196,7 +200,10 @@ function Community() {
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent text-accent-foreground font-medium">{p.category}</span>
               {p.mood && <span className="text-base">{p.mood}</span>}
             </div>
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{p.content}</p>
+            {p.content && <p className="text-sm leading-relaxed whitespace-pre-wrap">{p.content}</p>}
+            {p.image_url && (
+              <img src={p.image_url} alt="post" loading="lazy" className="w-full rounded-xl border border-border/60 max-h-96 object-cover" />
+            )}
             <div className="flex items-center gap-4 pt-1 text-xs text-muted-foreground">
               <button onClick={() => toggleSupport(p)} className={`flex items-center gap-1.5 ${p.user_supported ? "text-rose-500" : "hover:text-primary"}`}>
                 <Heart className={`h-4 w-4 ${p.user_supported ? "fill-rose-500" : ""}`} /> {p.support_count}
@@ -218,6 +225,9 @@ function Community() {
           category={category} setCategory={setCategory}
           mood={mood} setMood={setMood}
           anon={anon} setAnon={setAnon}
+          imageFile={imageFile} setImageFile={setImageFile}
+          imagePreview={imagePreview} setImagePreview={setImagePreview}
+          posting={posting}
           onClose={() => setShowCompose(false)}
           onSubmit={submit}
         />
