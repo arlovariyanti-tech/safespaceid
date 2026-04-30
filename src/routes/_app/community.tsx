@@ -250,7 +250,15 @@ function StatCard({ emoji, n, label }: { emoji: string; n: number; label: string
   );
 }
 
-function ComposeModal({ text, setText, category, setCategory, mood, setMood, anon, setAnon, onClose, onSubmit }: any) {
+function ComposeModal({ text, setText, category, setCategory, mood, setMood, anon, setAnon, imageFile, setImageFile, imagePreview, setImagePreview, posting, onClose, onSubmit }: any) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const onPickImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) return toast.error("Maks 5MB");
+    setImageFile(f);
+    setImagePreview(URL.createObjectURL(f));
+  };
   return (
     <div className="fixed inset-0 z-50 bg-black/40 flex items-end justify-center p-0 sm:p-4">
       <div className="w-full max-w-[440px] bg-background rounded-t-3xl sm:rounded-3xl p-5 space-y-4 max-h-[92vh] overflow-y-auto">
@@ -259,8 +267,26 @@ function ComposeModal({ text, setText, category, setCategory, mood, setMood, ano
           <button onClick={onClose} className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"><X className="h-4 w-4" /></button>
         </div>
         <textarea value={text} onChange={(e) => setText(e.target.value)}
-          placeholder="Apa yang ingin kamu bagikan hari ini?" rows={5}
+          placeholder="Apa yang ingin kamu bagikan hari ini?" rows={4}
           className="w-full p-4 rounded-2xl border border-border bg-card text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30" />
+
+        {imagePreview ? (
+          <div className="relative">
+            <img src={imagePreview} alt="preview" className="w-full max-h-64 object-cover rounded-2xl border border-border" />
+            <button onClick={() => { setImageFile(null); setImagePreview(null); }}
+              className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/70 text-white flex items-center justify-center">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => fileRef.current?.click()}
+            className="w-full h-20 rounded-2xl border-2 border-dashed border-border text-xs text-muted-foreground flex flex-col items-center justify-center gap-1 hover:border-primary hover:text-primary transition">
+            <ImagePlus className="h-5 w-5" />
+            Tambahkan foto (opsional)
+          </button>
+        )}
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPickImage} />
+
         <div>
           <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Kategori</p>
           <div className="flex flex-wrap gap-1.5">
@@ -287,8 +313,8 @@ function ComposeModal({ text, setText, category, setCategory, mood, setMood, ano
           <input type="checkbox" checked={anon} onChange={(e) => setAnon(e.target.checked)} className="h-4 w-4 accent-primary" />
           <span>Posting sebagai anonim 🌸</span>
         </label>
-        <Button variant="hero" size="xl" className="w-full" disabled={!text.trim()} onClick={onSubmit}>
-          Posting Sekarang
+        <Button variant="hero" size="xl" className="w-full" disabled={posting || (!text.trim() && !imageFile)} onClick={onSubmit}>
+          {posting ? <><Loader2 className="h-4 w-4 animate-spin" /> Mengirim…</> : "Posting Sekarang"}
         </Button>
       </div>
     </div>
