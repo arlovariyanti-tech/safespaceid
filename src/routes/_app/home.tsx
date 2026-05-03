@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Bell, BookOpen, NotebookPen, Sparkles, Target, MessageCircleHeart, ClipboardCheck, Heart, ArrowRight } from "lucide-react";
+import { Bell, BookOpen, NotebookPen, Sparkles, Target, MessageCircleHeart, ClipboardCheck, Heart, ArrowRight, GraduationCap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,24 +15,29 @@ const quickFeatures = [
   { to: "/motivation", icon: Sparkles, label: "Motivasi", color: "bg-amber-100 text-amber-700" },
   { to: "/challenge", icon: Target, label: "Challenge", color: "bg-lime-100 text-lime-700" },
   { to: "/emergency", icon: MessageCircleHeart, label: "Konsultasi", color: "bg-rose-100 text-rose-700" },
+  { to: "/school", icon: GraduationCap, label: "Sekolah", color: "bg-indigo-100 text-indigo-700" },
 ] as const;
 
 function Home() {
   const { user } = useAuth();
   const name = (user?.user_metadata?.display_name as string) || user?.email?.split("@")[0] || "Sahabat";
   const [activeChallenge, setActiveChallenge] = useState<{ title: string; current: number; total: number } | null>(null);
+  const [school, setSchool] = useState<{ code: string; display_name: string } | null>(null);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase
-        .from("challenge_progress")
-        .select("*")
-        .neq("challenge_id", "daily")
-        .eq("completed", false)
-        .order("updated_at", { ascending: false })
-        .limit(1);
-      if (data && data[0]) {
+      const [{ data: ch }, { data: prof }] = await Promise.all([
+        supabase
+          .from("challenge_progress")
+          .select("*")
+          .neq("challenge_id", "daily")
+          .eq("completed", false)
+          .order("updated_at", { ascending: false })
+          .limit(1),
+        supabase.from("profiles").select("school_code").eq("id", user.id).maybeSingle(),
+      ]);
+      if (ch && ch[0]) {
         const titles: Record<string, string> = {
           "teman-baik-7": "7 Hari Jadi Teman Baik",
           "speak-kindly-7": "Speak Kindly Challenge",
@@ -40,12 +45,18 @@ function Home() {
           "pendengar-7": "7 Hari Pendengar yang Baik",
         };
         setActiveChallenge({
-          title: titles[data[0].challenge_id] ?? "Challenge Aktif",
-          current: data[0].current_day,
-          total: data[0].total_days,
+          title: titles[ch[0].challenge_id] ?? "Challenge Aktif",
+          current: ch[0].current_day,
+          total: ch[0].total_days,
         });
       } else {
         setActiveChallenge(null);
+      }
+      if (prof?.school_code) {
+        const { data: s } = await supabase.from("schools").select("code, display_name").eq("code", prof.school_code).maybeSingle();
+        setSchool(s as any);
+      } else {
+        setSchool(null);
       }
     })();
   }, [user]);
@@ -92,6 +103,34 @@ function Home() {
           <ArrowRight className="h-5 w-5" />
         </Link>
       </div>
+
+      <div className="px-5 mt-4">
+        <Link
+          to="/school"
+          className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-br from-indigo-100 to-violet-100 border border-indigo-200/60"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-white/70 flex items-center justify-center">
+              <GraduationCap className="h-5 w-5 text-indigo-700" />
+            </div>
+            <div>
+              {school ? (
+                <>
+                  <p className="font-bold text-sm">Kamu tergabung di:</p>
+                  <p className="text-xs text-foreground/70">{school.display_name} 🎓</p>
+                </>
+              ) : (
+                <>
+                  <p className="font-bold text-sm">Gabung Program Sekolah</p>
+                  <p className="text-xs text-foreground/70">Masukkan kode sekolahmu</p>
+                </>
+              )}
+            </div>
+          </div>
+          <ArrowRight className="h-5 w-5" />
+        </Link>
+      </div>
+
 
       <section className="px-5 mt-7">
         <h2 className="font-bold mb-3">Fitur Untukmu</h2>
