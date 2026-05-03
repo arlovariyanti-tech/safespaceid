@@ -232,6 +232,8 @@ export type Database = {
           display_name: string | null
           id: string
           is_private: boolean
+          school_code: string | null
+          school_joined_at: string | null
           updated_at: string
           username: string | null
         }
@@ -244,6 +246,8 @@ export type Database = {
           display_name?: string | null
           id: string
           is_private?: boolean
+          school_code?: string | null
+          school_joined_at?: string | null
           updated_at?: string
           username?: string | null
         }
@@ -256,8 +260,74 @@ export type Database = {
           display_name?: string | null
           id?: string
           is_private?: boolean
+          school_code?: string | null
+          school_joined_at?: string | null
           updated_at?: string
           username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      school_check_ins: {
+        Row: {
+          challenge_day: number
+          check_date: string
+          created_at: string
+          id: string
+          school_code: string
+          user_id: string
+        }
+        Insert: {
+          challenge_day?: number
+          check_date?: string
+          created_at?: string
+          id?: string
+          school_code: string
+          user_id: string
+        }
+        Update: {
+          challenge_day?: number
+          check_date?: string
+          created_at?: string
+          id?: string
+          school_code?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "school_check_ins_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      schools: {
+        Row: {
+          code: string
+          created_at: string
+          daily_target: number
+          display_name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          daily_target?: number
+          display_name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          daily_target?: number
+          display_name?: string
         }
         Relationships: []
       }
@@ -266,7 +336,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      join_school: {
+        Args: { _code: string; _display_name?: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
