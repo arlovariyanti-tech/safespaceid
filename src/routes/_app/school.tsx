@@ -57,7 +57,7 @@ function SchoolPage() {
     if (!code.trim()) { toast.error("Isi kode sekolahmu dulu"); return; }
     setLoading(true);
     const { data, error } = await supabase.rpc("join_school", {
-      _code: code.trim(), _display_name: name.trim() || null,
+      _code: code.trim(), _display_name: name.trim() || undefined,
     });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
