@@ -26,14 +26,17 @@ function Home() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase
-        .from("challenge_progress")
-        .select("*")
-        .neq("challenge_id", "daily")
-        .eq("completed", false)
-        .order("updated_at", { ascending: false })
-        .limit(1);
-      if (data && data[0]) {
+      const [{ data: ch }, { data: prof }] = await Promise.all([
+        supabase
+          .from("challenge_progress")
+          .select("*")
+          .neq("challenge_id", "daily")
+          .eq("completed", false)
+          .order("updated_at", { ascending: false })
+          .limit(1),
+        supabase.from("profiles").select("school_code").eq("id", user.id).maybeSingle(),
+      ]);
+      if (ch && ch[0]) {
         const titles: Record<string, string> = {
           "teman-baik-7": "7 Hari Jadi Teman Baik",
           "speak-kindly-7": "Speak Kindly Challenge",
@@ -41,12 +44,18 @@ function Home() {
           "pendengar-7": "7 Hari Pendengar yang Baik",
         };
         setActiveChallenge({
-          title: titles[data[0].challenge_id] ?? "Challenge Aktif",
-          current: data[0].current_day,
-          total: data[0].total_days,
+          title: titles[ch[0].challenge_id] ?? "Challenge Aktif",
+          current: ch[0].current_day,
+          total: ch[0].total_days,
         });
       } else {
         setActiveChallenge(null);
+      }
+      if (prof?.school_code) {
+        const { data: s } = await supabase.from("schools").select("code, display_name").eq("code", prof.school_code).maybeSingle();
+        setSchool(s as any);
+      } else {
+        setSchool(null);
       }
     })();
   }, [user]);
