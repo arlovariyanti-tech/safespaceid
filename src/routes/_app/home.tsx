@@ -104,6 +104,34 @@ function Home() {
         </Link>
       </div>
 
+      <div className="px-5 mt-4">
+        <Link
+          to="/school"
+          className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-br from-indigo-100 to-violet-100 border border-indigo-200/60"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-white/70 flex items-center justify-center">
+              <GraduationCap className="h-5 w-5 text-indigo-700" />
+            </div>
+            <div>
+              {school ? (
+                <>
+                  <p className="font-bold text-sm">Kamu tergabung di:</p>
+                  <p className="text-xs text-foreground/70">{school.display_name} 🎓</p>
+                </>
+              ) : (
+                <>
+                  <p className="font-bold text-sm">Gabung Program Sekolah</p>
+                  <p className="text-xs text-foreground/70">Masukkan kode sekolahmu</p>
+                </>
+              )}
+            </div>
+          </div>
+          <ArrowRight className="h-5 w-5" />
+        </Link>
+      </div>
+
+
       <section className="px-5 mt-7">
         <h2 className="font-bold mb-3">Fitur Untukmu</h2>
         <div className="grid grid-cols-3 gap-3">
