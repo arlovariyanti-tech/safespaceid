@@ -21,6 +21,7 @@ function Home() {
   const { user } = useAuth();
   const name = (user?.user_metadata?.display_name as string) || user?.email?.split("@")[0] || "Sahabat";
   const [activeChallenge, setActiveChallenge] = useState<{ title: string; current: number; total: number } | null>(null);
+  const [school, setSchool] = useState<{ code: string; display_name: string } | null>(null);
 
   useEffect(() => {
     if (!user) return;
