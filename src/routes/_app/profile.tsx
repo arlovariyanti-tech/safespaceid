@@ -93,6 +93,12 @@ function Profile() {
           ))}
         </div>
 
+        {isAdmin && (
+          <Link to="/admin" className="w-full flex items-center justify-center gap-2 h-12 rounded-2xl bg-indigo-50 text-indigo-700 font-semibold text-sm border border-indigo-200">
+            <ShieldCheck className="h-4 w-4" /> Panel Admin
+          </Link>
+        )}
+
         <button
           onClick={async () => { await signOut(); toast.success("Sampai jumpa lagi 💙"); nav({ to: "/login" }); }}
           className="w-full flex items-center justify-center gap-2 h-12 rounded-2xl bg-rose-50 text-rose-600 font-semibold text-sm border border-rose-200"
