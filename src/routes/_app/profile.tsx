@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/MobileFrame";
-import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, MessageCircleHeart, Lock } from "lucide-react";
+import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, MessageCircleHeart, Lock, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
