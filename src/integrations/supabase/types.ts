@@ -312,22 +312,61 @@ export type Database = {
       }
       schools: {
         Row: {
+          approved_at: string | null
+          city: string | null
           code: string
           created_at: string
           daily_target: number
           display_name: string
+          status: string
+          submitted_by: string | null
+          submitter_contact: string | null
+          submitter_name: string | null
         }
         Insert: {
+          approved_at?: string | null
+          city?: string | null
           code: string
           created_at?: string
           daily_target?: number
           display_name: string
+          status?: string
+          submitted_by?: string | null
+          submitter_contact?: string | null
+          submitter_name?: string | null
         }
         Update: {
+          approved_at?: string | null
+          city?: string | null
           code?: string
           created_at?: string
           daily_target?: number
           display_name?: string
+          status?: string
+          submitted_by?: string | null
+          submitter_contact?: string | null
+          submitter_name?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -336,13 +375,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_school: { Args: { _pending_code: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       join_school: {
         Args: { _code: string; _display_name?: string }
         Returns: string
       }
+      reject_school: { Args: { _pending_code: string }; Returns: undefined }
+      submit_school: {
+        Args: {
+          _city: string
+          _contact?: string
+          _name: string
+          _submitter_name?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -469,6 +526,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

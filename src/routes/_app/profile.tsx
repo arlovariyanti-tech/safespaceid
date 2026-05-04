@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/MobileFrame";
-import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, MessageCircleHeart, Lock } from "lucide-react";
+import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, MessageCircleHeart, Lock, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -23,17 +23,20 @@ function Profile() {
   const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [counts, setCounts] = useState({ diary: 0, day: 0, total: 7 });
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: p }, { count: diaryCount }, { data: ch }] = await Promise.all([
+      const [{ data: p }, { count: diaryCount }, { data: ch }, { data: roleRow }] = await Promise.all([
         supabase.from("profiles").select("display_name, avatar_url, bio, username").eq("id", user.id).maybeSingle(),
         supabase.from("diary_entries").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("challenge_progress").select("current_day, total_days").eq("user_id", user.id).limit(1).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle(),
       ]);
       setProfile(p as any);
       setCounts({ diary: diaryCount ?? 0, day: ch?.current_day ?? 0, total: ch?.total_days ?? 7 });
+      setIsAdmin(!!roleRow);
     })();
   }, [user]);
 
@@ -89,6 +92,12 @@ function Profile() {
             </Link>
           ))}
         </div>
+
+        {isAdmin && (
+          <Link to="/admin" className="w-full flex items-center justify-center gap-2 h-12 rounded-2xl bg-indigo-50 text-indigo-700 font-semibold text-sm border border-indigo-200">
+            <ShieldCheck className="h-4 w-4" /> Panel Admin
+          </Link>
+        )}
 
         <button
           onClick={async () => { await signOut(); toast.success("Sampai jumpa lagi 💙"); nav({ to: "/login" }); }}

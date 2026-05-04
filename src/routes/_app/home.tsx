@@ -15,7 +15,7 @@ const quickFeatures = [
   { to: "/motivation", icon: Sparkles, label: "Motivasi", color: "bg-amber-100 text-amber-700" },
   { to: "/challenge", icon: Target, label: "Challenge", color: "bg-lime-100 text-lime-700" },
   { to: "/emergency", icon: MessageCircleHeart, label: "Konsultasi", color: "bg-rose-100 text-rose-700" },
-  { to: "/school", icon: GraduationCap, label: "Sekolah", color: "bg-indigo-100 text-indigo-700" },
+  { to: "/school", icon: GraduationCap, label: "Komunitas Sekolah", color: "bg-indigo-100 text-indigo-700" },
 ] as const;
 
 function Home() {
@@ -116,13 +116,13 @@ function Home() {
             <div>
               {school ? (
                 <>
-                  <p className="font-bold text-sm">Kamu tergabung di:</p>
+                  <p className="font-bold text-sm">Komunitas kamu:</p>
                   <p className="text-xs text-foreground/70">{school.display_name} 🎓</p>
                 </>
               ) : (
                 <>
-                  <p className="font-bold text-sm">Gabung Program Sekolah</p>
-                  <p className="text-xs text-foreground/70">Masukkan kode sekolahmu</p>
+                  <p className="font-bold text-sm">Gabung Komunitas Sekolah</p>
+                  <p className="text-xs text-foreground/70">Punya kode? Atau ajukan sekolahmu</p>
                 </>
               )}
             </div>
