@@ -116,13 +116,13 @@ function Home() {
             <div>
               {school ? (
                 <>
-                  <p className="font-bold text-sm">Kamu tergabung di:</p>
+                  <p className="font-bold text-sm">Komunitas kamu:</p>
                   <p className="text-xs text-foreground/70">{school.display_name} 🎓</p>
                 </>
               ) : (
                 <>
-                  <p className="font-bold text-sm">Gabung Program Sekolah</p>
-                  <p className="text-xs text-foreground/70">Masukkan kode sekolahmu</p>
+                  <p className="font-bold text-sm">Gabung Komunitas Sekolah</p>
+                  <p className="text-xs text-foreground/70">Punya kode? Atau ajukan sekolahmu</p>
                 </>
               )}
             </div>
