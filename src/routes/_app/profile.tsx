@@ -23,6 +23,7 @@ function Profile() {
   const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [counts, setCounts] = useState({ diary: 0, day: 0, total: 7 });
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (!user) return;
