@@ -77,8 +77,8 @@ function SchoolPage() {
     const { error } = await supabase.rpc("submit_school", {
       _name: rName.trim(),
       _city: rCity.trim(),
-      _submitter_name: rSubmitter.trim() || null,
-      _contact: rContact.trim() || null,
+      _submitter_name: rSubmitter.trim() || undefined,
+      _contact: rContact.trim() || undefined,
     });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
