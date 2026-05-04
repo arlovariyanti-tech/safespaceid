@@ -25,6 +25,7 @@ import { Route as AppEdukasiRouteImport } from './routes/_app/edukasi'
 import { Route as AppDiaryRouteImport } from './routes/_app/diary'
 import { Route as AppCommunityRouteImport } from './routes/_app/community'
 import { Route as AppChallengeRouteImport } from './routes/_app/challenge'
+import { Route as AppAdminRouteImport } from './routes/_app/admin'
 import { Route as AppProfileSettingsRouteImport } from './routes/_app/profile.settings'
 import { Route as AppProfilePrivacyRouteImport } from './routes/_app/profile.privacy'
 import { Route as AppProfileEditRouteImport } from './routes/_app/profile.edit'
@@ -109,6 +110,11 @@ const AppChallengeRoute = AppChallengeRouteImport.update({
   path: '/challenge',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAdminRoute = AppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProfileSettingsRoute = AppProfileSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/register': typeof RegisterRoute
+  '/admin': typeof AppAdminRoute
   '/challenge': typeof AppChallengeRoute
   '/community': typeof AppCommunityRoute
   '/diary': typeof AppDiaryRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/register': typeof RegisterRoute
+  '/admin': typeof AppAdminRoute
   '/challenge': typeof AppChallengeRoute
   '/community': typeof AppCommunityRoute
   '/diary': typeof AppDiaryRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
   '/register': typeof RegisterRoute
+  '/_app/admin': typeof AppAdminRoute
   '/_app/challenge': typeof AppChallengeRoute
   '/_app/community': typeof AppCommunityRoute
   '/_app/diary': typeof AppDiaryRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/register'
+    | '/admin'
     | '/challenge'
     | '/community'
     | '/diary'
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/register'
+    | '/admin'
     | '/challenge'
     | '/community'
     | '/diary'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/register'
+    | '/_app/admin'
     | '/_app/challenge'
     | '/_app/community'
     | '/_app/diary'
@@ -384,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppChallengeRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/admin': {
+      id: '/_app/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AppAdminRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/profile/settings': {
       id: '/_app/profile/settings'
       path: '/settings'
@@ -444,6 +463,7 @@ const AppProfileRouteWithChildren = AppProfileRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppAdminRoute: typeof AppAdminRoute
   AppChallengeRoute: typeof AppChallengeRoute
   AppCommunityRoute: typeof AppCommunityRoute
   AppDiaryRoute: typeof AppDiaryRoute
@@ -458,6 +478,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAdminRoute: AppAdminRoute,
   AppChallengeRoute: AppChallengeRoute,
   AppCommunityRoute: AppCommunityRoute,
   AppDiaryRoute: AppDiaryRoute,

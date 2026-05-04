@@ -15,7 +15,7 @@ const quickFeatures = [
   { to: "/motivation", icon: Sparkles, label: "Motivasi", color: "bg-amber-100 text-amber-700" },
   { to: "/challenge", icon: Target, label: "Challenge", color: "bg-lime-100 text-lime-700" },
   { to: "/emergency", icon: MessageCircleHeart, label: "Konsultasi", color: "bg-rose-100 text-rose-700" },
-  { to: "/school", icon: GraduationCap, label: "Sekolah", color: "bg-indigo-100 text-indigo-700" },
+  { to: "/school", icon: GraduationCap, label: "Komunitas Sekolah", color: "bg-indigo-100 text-indigo-700" },
 ] as const;
 
 function Home() {
