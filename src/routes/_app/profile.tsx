@@ -28,13 +28,15 @@ function Profile() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: p }, { count: diaryCount }, { data: ch }] = await Promise.all([
+      const [{ data: p }, { count: diaryCount }, { data: ch }, { data: roleRow }] = await Promise.all([
         supabase.from("profiles").select("display_name, avatar_url, bio, username").eq("id", user.id).maybeSingle(),
         supabase.from("diary_entries").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("challenge_progress").select("current_day, total_days").eq("user_id", user.id).limit(1).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle(),
       ]);
       setProfile(p as any);
       setCounts({ diary: diaryCount ?? 0, day: ch?.current_day ?? 0, total: ch?.total_days ?? 7 });
+      setIsAdmin(!!roleRow);
     })();
   }, [user]);
 
