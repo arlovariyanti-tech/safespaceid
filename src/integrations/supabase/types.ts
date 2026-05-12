@@ -180,6 +180,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       post_reports: {
         Row: {
           comment_id: string | null
@@ -274,6 +307,33 @@ export type Database = {
             referencedColumns: ["code"]
           },
         ]
+      }
+      saved_motivations: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string
+          id: string
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       school_check_ins: {
         Row: {
@@ -387,6 +447,7 @@ export type Database = {
         Args: { _code: string; _display_name?: string }
         Returns: string
       }
+      mark_all_notifications_read: { Args: never; Returns: undefined }
       reject_school: { Args: { _pending_code: string }; Returns: undefined }
       submit_school: {
         Args: {
