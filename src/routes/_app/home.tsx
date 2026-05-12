@@ -23,6 +23,7 @@ function Home() {
   const name = (user?.user_metadata?.display_name as string) || user?.email?.split("@")[0] || "Sahabat";
   const [activeChallenge, setActiveChallenge] = useState<{ title: string; current: number; total: number } | null>(null);
   const [school, setSchool] = useState<{ code: string; display_name: string } | null>(null);
+  const [unread, setUnread] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -59,7 +60,12 @@ function Home() {
         setSchool(null);
       }
     })();
-  }, [user]);
+    supabase.from("notifications").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("is_read", false).then(({ count }) => setUnread(count ?? 0));
+    const ch = supabase.channel("home-notif").on("postgres_changes", { event: "*", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` }, async () => {
+      const { count } = await supabase.from("notifications").select("*", { count: "exact", head: true }).eq("user_id", user.id).eq("is_read", false);
+      setUnread(count ?? 0);
+    }).subscribe();
+    return () => { supabase.removeChannel(ch); };
 
   const pct = activeChallenge ? (activeChallenge.current / activeChallenge.total) * 100 : 0;
 
@@ -71,9 +77,10 @@ function Home() {
             <p className="text-sm text-muted-foreground">Halo,</p>
             <h1 className="text-2xl font-bold">{name} 👋</h1>
           </div>
-          <button className="h-10 w-10 rounded-full bg-background/70 backdrop-blur flex items-center justify-center border border-border/50">
+          <Link to="/notifications" className="relative h-10 w-10 rounded-full bg-background/70 backdrop-blur flex items-center justify-center border border-border/50">
             <Bell className="h-5 w-5" />
-          </button>
+            {unread > 0 && <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center">{unread > 9 ? "9+" : unread}</span>}
+          </Link>
         </div>
 
         <div className="mt-6 p-5 rounded-2xl bg-background/80 backdrop-blur border border-white/60 shadow-[var(--shadow-soft)]">
