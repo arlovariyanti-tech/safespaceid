@@ -128,7 +128,7 @@ function Motivation() {
           <div className="space-y-3">
             {audios.map((a, i) => {
               const isPlaying = playing === a.title;
-              const liked = favs.includes(1000 + i);
+              const liked = savedSet.has(a.title);
               return (
                 <div key={a.title} className={`p-4 rounded-2xl bg-gradient-to-br ${a.color} border border-white/60`}>
                   <div className="flex items-center gap-3 mb-2">
@@ -144,7 +144,7 @@ function Motivation() {
                       <p className="text-[11px] text-foreground/60 mt-0.5">{a.duration}</p>
                     </div>
                     <button
-                      onClick={() => setFavs(liked ? favs.filter((x) => x !== 1000 + i) : [...favs, 1000 + i])}
+                      onClick={() => toggleSave(a.title, "audio")}
                       aria-label="favorite"
                       className="h-9 w-9 rounded-full bg-white/70 flex items-center justify-center"
                     >
@@ -188,12 +188,15 @@ function Motivation() {
           <h2 className="font-bold mb-3 text-sm uppercase tracking-wider text-muted-foreground">Afirmasi Positif</h2>
           <div className="space-y-2">
             {dailyMotivations.slice(0, 4).map((a, i) => {
-              const liked = favs.includes(i);
+              const liked = savedSet.has(a);
               return (
-                <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-card border border-border/60">
+                <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-card border border-border/60 animate-fade-in">
                   <Heart className="h-4 w-4 text-primary fill-primary mt-0.5 shrink-0" />
                   <p className="text-sm font-medium flex-1">{a}</p>
-                  <button onClick={() => setFavs(liked ? favs.filter((x) => x !== i) : [...favs, i])} aria-label="favorite">
+                  <button onClick={() => setShareQuote(a)} aria-label="share" className="shrink-0">
+                    <Share2 className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                  <button onClick={() => toggleSave(a, "afirmasi")} aria-label="favorite" className="shrink-0">
                     <Heart className={`h-4 w-4 ${liked ? "fill-rose-500 text-rose-500" : "text-muted-foreground"}`} />
                   </button>
                 </div>
