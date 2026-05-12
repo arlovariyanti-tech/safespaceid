@@ -216,6 +216,7 @@ function Motivation() {
           </p>
         </section>
       </div>
+      <ShareQuoteDialog open={!!shareQuote} onOpenChange={(v) => !v && setShareQuote(null)} quote={shareQuote ?? ""} />
     </div>
   );
 }
