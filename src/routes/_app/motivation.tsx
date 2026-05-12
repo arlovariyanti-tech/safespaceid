@@ -1,7 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
 import { PageHeader } from "@/components/MobileFrame";
-import { Sparkles, Heart, BookOpen, Play, Pause, ChevronRight, AlertCircle, Wind, Phone, NotebookPen } from "lucide-react";
+import { Sparkles, Heart, BookOpen, Play, Pause, ChevronRight, AlertCircle, Wind, Phone, NotebookPen, Share2, Bookmark } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { ShareQuoteDialog } from "@/components/ShareQuoteDialog";
 
 export const Route = createFileRoute("/_app/motivation")({
   component: Motivation,
