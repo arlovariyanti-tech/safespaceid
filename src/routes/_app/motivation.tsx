@@ -1,7 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
 import { PageHeader } from "@/components/MobileFrame";
-import { Sparkles, Heart, BookOpen, Play, Pause, ChevronRight, AlertCircle, Wind, Phone, NotebookPen } from "lucide-react";
+import { Sparkles, Heart, BookOpen, Play, Pause, ChevronRight, AlertCircle, Wind, Phone, NotebookPen, Share2, Bookmark } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { ShareQuoteDialog } from "@/components/ShareQuoteDialog";
 
 export const Route = createFileRoute("/_app/motivation")({
   component: Motivation,
@@ -38,13 +42,36 @@ const audios = [
 ];
 
 function Motivation() {
+  const { user } = useAuth();
   const today = new Date().getDate();
   const motivation = dailyMotivations[today % dailyMotivations.length];
   const prayer = socialPrayers[today % socialPrayers.length];
 
-  const [favs, setFavs] = useState<number[]>([]);
+  const [savedSet, setSavedSet] = useState<Set<string>>(new Set());
   const [playing, setPlaying] = useState<string | null>(null);
   const [emergency, setEmergency] = useState(false);
+  const [shareQuote, setShareQuote] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("saved_motivations").select("content").eq("user_id", user.id).then(({ data }) => {
+      setSavedSet(new Set((data ?? []).map((r: any) => r.content)));
+    });
+  }, [user]);
+
+  const toggleSave = async (content: string, category: string) => {
+    if (!user) return toast.error("Login dulu ya");
+    const has = savedSet.has(content);
+    if (has) {
+      await supabase.from("saved_motivations").delete().eq("user_id", user.id).eq("content", content);
+      setSavedSet((p) => { const n = new Set(p); n.delete(content); return n; });
+      toast("Dihapus dari favorit");
+    } else {
+      await supabase.from("saved_motivations").insert({ user_id: user.id, content, category });
+      setSavedSet((p) => new Set(p).add(content));
+      toast.success("Tersimpan ke favorit ✨");
+    }
+  };
 
   if (emergency) return <EmergencyComfort onClose={() => setEmergency(false)} />;
 
@@ -68,17 +95,22 @@ function Motivation() {
         </button>
 
         {/* Daily motivation */}
-        <div className="p-6 rounded-3xl bg-[image:var(--gradient-primary)] text-primary-foreground shadow-[var(--shadow-glow)] relative">
+        <div className="p-6 rounded-3xl bg-[image:var(--gradient-primary)] text-primary-foreground shadow-[var(--shadow-glow)] relative animate-fade-in">
           <Sparkles className="h-6 w-6 mb-3" />
           <p className="text-lg font-bold leading-snug">"{motivation}"</p>
-          <div className="flex items-center justify-between mt-3">
+          <div className="flex items-center justify-between mt-3 gap-2">
             <p className="text-xs opacity-80">— Motivasi Hari Ini</p>
-            <button
-              onClick={() => setFavs(favs.includes(-1) ? favs.filter((x) => x !== -1) : [...favs, -1])}
-              className="text-xs flex items-center gap-1 bg-white/20 px-3 py-1 rounded-full"
-            >
-              <Heart className={`h-3 w-3 ${favs.includes(-1) ? "fill-white" : ""}`} /> Simpan
-            </button>
+            <div className="flex gap-1">
+              <button
+                onClick={() => toggleSave(motivation, "harian")}
+                className="text-xs flex items-center gap-1 bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-full active:scale-95 transition"
+              >
+                <Bookmark className={`h-3.5 w-3.5 ${savedSet.has(motivation) ? "fill-white" : ""}`} /> {savedSet.has(motivation) ? "Tersimpan" : "Simpan"}
+              </button>
+              <button onClick={() => setShareQuote(motivation)} className="h-8 w-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center active:scale-95 transition">
+                <Share2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -96,7 +128,7 @@ function Motivation() {
           <div className="space-y-3">
             {audios.map((a, i) => {
               const isPlaying = playing === a.title;
-              const liked = favs.includes(1000 + i);
+              const liked = savedSet.has(a.title);
               return (
                 <div key={a.title} className={`p-4 rounded-2xl bg-gradient-to-br ${a.color} border border-white/60`}>
                   <div className="flex items-center gap-3 mb-2">
@@ -112,7 +144,7 @@ function Motivation() {
                       <p className="text-[11px] text-foreground/60 mt-0.5">{a.duration}</p>
                     </div>
                     <button
-                      onClick={() => setFavs(liked ? favs.filter((x) => x !== 1000 + i) : [...favs, 1000 + i])}
+                      onClick={() => toggleSave(a.title, "audio")}
                       aria-label="favorite"
                       className="h-9 w-9 rounded-full bg-white/70 flex items-center justify-center"
                     >
@@ -156,12 +188,15 @@ function Motivation() {
           <h2 className="font-bold mb-3 text-sm uppercase tracking-wider text-muted-foreground">Afirmasi Positif</h2>
           <div className="space-y-2">
             {dailyMotivations.slice(0, 4).map((a, i) => {
-              const liked = favs.includes(i);
+              const liked = savedSet.has(a);
               return (
-                <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-card border border-border/60">
+                <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-card border border-border/60 animate-fade-in">
                   <Heart className="h-4 w-4 text-primary fill-primary mt-0.5 shrink-0" />
                   <p className="text-sm font-medium flex-1">{a}</p>
-                  <button onClick={() => setFavs(liked ? favs.filter((x) => x !== i) : [...favs, i])} aria-label="favorite">
+                  <button onClick={() => setShareQuote(a)} aria-label="share" className="shrink-0">
+                    <Share2 className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                  <button onClick={() => toggleSave(a, "afirmasi")} aria-label="favorite" className="shrink-0">
                     <Heart className={`h-4 w-4 ${liked ? "fill-rose-500 text-rose-500" : "text-muted-foreground"}`} />
                   </button>
                 </div>
@@ -181,6 +216,7 @@ function Motivation() {
           </p>
         </section>
       </div>
+      <ShareQuoteDialog open={!!shareQuote} onOpenChange={(v) => !v && setShareQuote(null)} quote={shareQuote ?? ""} />
     </div>
   );
 }
