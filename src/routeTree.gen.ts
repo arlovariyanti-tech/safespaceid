@@ -16,8 +16,10 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppSelfCheckRouteImport } from './routes/_app/self-check'
 import { Route as AppSchoolRouteImport } from './routes/_app/school'
+import { Route as AppSavedRouteImport } from './routes/_app/saved'
 import { Route as AppQuizRouteImport } from './routes/_app/quiz'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
+import { Route as AppNotificationsRouteImport } from './routes/_app/notifications'
 import { Route as AppMotivationRouteImport } from './routes/_app/motivation'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
 import { Route as AppEmergencyRouteImport } from './routes/_app/emergency'
@@ -65,6 +67,11 @@ const AppSchoolRoute = AppSchoolRouteImport.update({
   path: '/school',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSavedRoute = AppSavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppQuizRoute = AppQuizRouteImport.update({
   id: '/quiz',
   path: '/quiz',
@@ -73,6 +80,11 @@ const AppQuizRoute = AppQuizRouteImport.update({
 const AppProfileRoute = AppProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotificationsRoute = AppNotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => AppRoute,
 } as any)
 const AppMotivationRoute = AppMotivationRouteImport.update({
@@ -149,8 +161,10 @@ export interface FileRoutesByFullPath {
   '/emergency': typeof AppEmergencyRoute
   '/home': typeof AppHomeRoute
   '/motivation': typeof AppMotivationRoute
+  '/notifications': typeof AppNotificationsRoute
   '/profile': typeof AppProfileRouteWithChildren
   '/quiz': typeof AppQuizRoute
+  '/saved': typeof AppSavedRoute
   '/school': typeof AppSchoolRoute
   '/self-check': typeof AppSelfCheckRoute
   '/edukasi/$slug': typeof AppEdukasiSlugRoute
@@ -171,8 +185,10 @@ export interface FileRoutesByTo {
   '/emergency': typeof AppEmergencyRoute
   '/home': typeof AppHomeRoute
   '/motivation': typeof AppMotivationRoute
+  '/notifications': typeof AppNotificationsRoute
   '/profile': typeof AppProfileRouteWithChildren
   '/quiz': typeof AppQuizRoute
+  '/saved': typeof AppSavedRoute
   '/school': typeof AppSchoolRoute
   '/self-check': typeof AppSelfCheckRoute
   '/edukasi/$slug': typeof AppEdukasiSlugRoute
@@ -195,8 +211,10 @@ export interface FileRoutesById {
   '/_app/emergency': typeof AppEmergencyRoute
   '/_app/home': typeof AppHomeRoute
   '/_app/motivation': typeof AppMotivationRoute
+  '/_app/notifications': typeof AppNotificationsRoute
   '/_app/profile': typeof AppProfileRouteWithChildren
   '/_app/quiz': typeof AppQuizRoute
+  '/_app/saved': typeof AppSavedRoute
   '/_app/school': typeof AppSchoolRoute
   '/_app/self-check': typeof AppSelfCheckRoute
   '/_app/edukasi/$slug': typeof AppEdukasiSlugRoute
@@ -219,8 +237,10 @@ export interface FileRouteTypes {
     | '/emergency'
     | '/home'
     | '/motivation'
+    | '/notifications'
     | '/profile'
     | '/quiz'
+    | '/saved'
     | '/school'
     | '/self-check'
     | '/edukasi/$slug'
@@ -241,8 +261,10 @@ export interface FileRouteTypes {
     | '/emergency'
     | '/home'
     | '/motivation'
+    | '/notifications'
     | '/profile'
     | '/quiz'
+    | '/saved'
     | '/school'
     | '/self-check'
     | '/edukasi/$slug'
@@ -264,8 +286,10 @@ export interface FileRouteTypes {
     | '/_app/emergency'
     | '/_app/home'
     | '/_app/motivation'
+    | '/_app/notifications'
     | '/_app/profile'
     | '/_app/quiz'
+    | '/_app/saved'
     | '/_app/school'
     | '/_app/self-check'
     | '/_app/edukasi/$slug'
@@ -333,6 +357,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSchoolRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/saved': {
+      id: '/_app/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof AppSavedRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/quiz': {
       id: '/_app/quiz'
       path: '/quiz'
@@ -345,6 +376,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/notifications': {
+      id: '/_app/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AppNotificationsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/motivation': {
@@ -471,8 +509,10 @@ interface AppRouteChildren {
   AppEmergencyRoute: typeof AppEmergencyRoute
   AppHomeRoute: typeof AppHomeRoute
   AppMotivationRoute: typeof AppMotivationRoute
+  AppNotificationsRoute: typeof AppNotificationsRoute
   AppProfileRoute: typeof AppProfileRouteWithChildren
   AppQuizRoute: typeof AppQuizRoute
+  AppSavedRoute: typeof AppSavedRoute
   AppSchoolRoute: typeof AppSchoolRoute
   AppSelfCheckRoute: typeof AppSelfCheckRoute
 }
@@ -486,8 +526,10 @@ const AppRouteChildren: AppRouteChildren = {
   AppEmergencyRoute: AppEmergencyRoute,
   AppHomeRoute: AppHomeRoute,
   AppMotivationRoute: AppMotivationRoute,
+  AppNotificationsRoute: AppNotificationsRoute,
   AppProfileRoute: AppProfileRouteWithChildren,
   AppQuizRoute: AppQuizRoute,
+  AppSavedRoute: AppSavedRoute,
   AppSchoolRoute: AppSchoolRoute,
   AppSelfCheckRoute: AppSelfCheckRoute,
 }
