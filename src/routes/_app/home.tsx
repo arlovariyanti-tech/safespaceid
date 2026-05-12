@@ -66,6 +66,7 @@ function Home() {
       setUnread(count ?? 0);
     }).subscribe();
     return () => { supabase.removeChannel(ch); };
+  }, [user]);
 
   const pct = activeChallenge ? (activeChallenge.current / activeChallenge.total) * 100 : 0;
 
