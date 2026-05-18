@@ -35,11 +35,11 @@ function Splash() {
             <Shield className="h-12 w-12 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-4xl font-black tracking-tight">
-              NO MORE <span className="bg-clip-text text-transparent bg-[image:var(--gradient-primary)]">BULLY</span>
+            <h1 className="text-5xl font-black tracking-tight">
+              Safe<span className="bg-clip-text text-transparent bg-[image:var(--gradient-primary)]">Space</span>
             </h1>
-            <p className="mt-3 text-base text-muted-foreground italic">
-              Stop Bullying. Start Healing.
+            <p className="mt-3 text-sm text-muted-foreground italic max-w-xs">
+              Bangun Ruang Aman & Karakter Positif di Sekolahmu.
             </p>
           </div>
           <div className="pt-4">
