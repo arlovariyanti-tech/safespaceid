@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_app/profile")({
   component: Profile,
 });
 
-type ProfileRow = { display_name: string | null; avatar_url: string | null; bio: string | null; username: string | null };
+type ProfileRow = { display_name: string | null; avatar_url: string | null; bio: string | null; username: string | null; school_code: string | null };
 
 const menus = [
   { to: "/saved", label: "Tersimpan", icon: Bookmark },
@@ -23,6 +23,7 @@ function Profile() {
   const nav = useNavigate();
   const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<ProfileRow | null>(null);
+  const [schoolName, setSchoolName] = useState<string | null>(null);
   const [counts, setCounts] = useState({ diary: 0, day: 0, total: 7 });
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -30,7 +31,7 @@ function Profile() {
     if (!user) return;
     (async () => {
       const [{ data: p }, { count: diaryCount }, { data: ch }, { data: roleRow }] = await Promise.all([
-        supabase.from("profiles").select("display_name, avatar_url, bio, username").eq("id", user.id).maybeSingle(),
+        supabase.from("profiles").select("display_name, avatar_url, bio, username, school_code").eq("id", user.id).maybeSingle(),
         supabase.from("diary_entries").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("challenge_progress").select("current_day, total_days").eq("user_id", user.id).limit(1).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle(),
@@ -38,6 +39,10 @@ function Profile() {
       setProfile(p as any);
       setCounts({ diary: diaryCount ?? 0, day: ch?.current_day ?? 0, total: ch?.total_days ?? 7 });
       setIsAdmin(!!roleRow);
+      if ((p as any)?.school_code) {
+        const { data: s } = await supabase.from("schools").select("display_name").eq("code", (p as any).school_code).maybeSingle();
+        setSchoolName((s as any)?.display_name ?? null);
+      }
     })();
   }, [user]);
 
@@ -58,8 +63,13 @@ function Profile() {
           <h2 className="text-xl font-bold mt-3">{name}</h2>
           {profile?.username && <p className="text-xs text-muted-foreground">@{profile.username}</p>}
           <p className="text-sm text-muted-foreground">{user?.email}</p>
+          {schoolName && (
+            <div className="mt-2 inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-semibold border border-indigo-100">
+              🎓 {schoolName}
+            </div>
+          )}
           {profile?.bio && <p className="text-xs text-foreground/70 mt-2 max-w-xs">{profile.bio}</p>}
-          <Link to="/profile/edit" className="mt-3 px-4 h-8 rounded-full border border-border text-xs font-medium inline-flex items-center">
+          <Link to="/profile/edit" className="mt-3 px-4 h-8 rounded-full border border-border text-xs font-medium inline-flex items-center hover:bg-muted transition">
             Edit Profil
           </Link>
         </div>
@@ -107,7 +117,7 @@ function Profile() {
           <LogOut className="h-4 w-4" /> Keluar
         </button>
 
-        <p className="text-center text-[10px] text-muted-foreground pt-2">No More Bully · v1.0</p>
+        <p className="text-center text-[10px] text-muted-foreground pt-2">SafeSpace · v1.0</p>
       </div>
     </div>
   );

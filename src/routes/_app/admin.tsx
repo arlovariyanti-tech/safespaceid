@@ -75,7 +75,7 @@ function AdminPage() {
         <div className="p-8 text-center">
           <ShieldAlert className="h-12 w-12 mx-auto text-rose-500 mb-3" />
           <p className="font-semibold">Akses ditolak</p>
-          <p className="text-sm text-muted-foreground mt-1">Halaman ini hanya untuk admin No More Bully.</p>
+          <p className="text-sm text-muted-foreground mt-1">Halaman ini hanya untuk admin SafeSpace.</p>
         </div>
       </div>
     );

@@ -36,7 +36,7 @@ function KonsultasiAman() {
             kamu tidak harus menghadapinya sendiri.
           </p>
           <p className="text-sm leading-relaxed text-foreground/75 mt-3">
-            Kamu bisa menghubungi admin <span className="font-semibold">No More Bully</span> melalui Instagram untuk konsultasi ringan,
+            Kamu bisa menghubungi admin <span className="font-semibold">SafeSpace</span> melalui Instagram untuk konsultasi ringan,
             berbagi cerita, dan mendapatkan dukungan.
           </p>
         </div>

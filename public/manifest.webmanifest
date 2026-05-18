@@ -1,7 +1,7 @@
 {
-  "name": "No More Bully",
-  "short_name": "NoMoreBully",
-  "description": "Safe space untuk remaja: edukasi, komunitas, dan dukungan emosional.",
+  "name": "SafeSpace",
+  "short_name": "SafeSpace",
+  "description": "SafeSpace — Bangun Ruang Aman dan Karakter Positif di Sekolahmu.",
   "start_url": "/home",
   "scope": "/",
   "display": "standalone",

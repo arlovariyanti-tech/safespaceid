@@ -41,7 +41,7 @@ export function ShareQuoteDialog({ open, onOpenChange, quote }: { open: boolean;
     // logo / brand
     ctx.fillStyle = "#6366f1";
     ctx.font = "bold 36px -apple-system, system-ui, sans-serif";
-    ctx.fillText("No More Bully", 540, 1780);
+    ctx.fillText("SafeSpace", 540, 1780);
     ctx.fillStyle = "#64748b";
     ctx.font = "400 28px -apple-system, system-ui, sans-serif";
     ctx.fillText("antibully.lovable.app", 540, 1830);
@@ -59,7 +59,7 @@ export function ShareQuoteDialog({ open, onOpenChange, quote }: { open: boolean;
   };
 
   const shareNative = async (platform: "ig" | "wa") => {
-    const text = `"${quote}"\n\nDari No More Bully: ${APP_LINK}`;
+    const text = `"${quote}"\n\nDari SafeSpace: ${APP_LINK}`;
     if (platform === "wa") {
       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
       return;
@@ -81,7 +81,7 @@ export function ShareQuoteDialog({ open, onOpenChange, quote }: { open: boolean;
   };
 
   const copy = async () => {
-    await navigator.clipboard.writeText(`"${quote}"\n\nDari No More Bully: ${APP_LINK}`);
+    await navigator.clipboard.writeText(`"${quote}"\n\nDari SafeSpace: ${APP_LINK}`);
     toast.success("Teks disalin");
   };
 

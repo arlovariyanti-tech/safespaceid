@@ -16,12 +16,12 @@ export function InstallPrompt() {
         <div className="fixed inset-x-0 bottom-0 z-[60] p-4 pb-6 sm:p-6 pointer-events-none">
           <div className="max-w-[440px] mx-auto pointer-events-auto rounded-3xl bg-card border border-border shadow-2xl p-4 flex items-start gap-3 animate-in slide-in-from-bottom-8 fade-in duration-500">
             <div className="h-12 w-12 rounded-2xl bg-[image:var(--gradient-primary)] flex items-center justify-center text-primary-foreground shrink-0 overflow-hidden">
-              <img src="/icon-512.png" alt="No More Bully" className="h-12 w-12 object-cover" />
+              <img src="/icon-512.png" alt="SafeSpace" className="h-12 w-12 object-cover" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-sm">Tambahkan ke layar utama 🤍</p>
               <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
-                Akses No More Bully lebih cepat, langsung dari home screen kamu — seperti aplikasi nyata.
+                Akses SafeSpace lebih cepat, langsung dari home screen kamu — seperti aplikasi nyata.
               </p>
               <div className="flex gap-2 mt-3">
                 <button
@@ -63,7 +63,7 @@ export function InstallPrompt() {
                 <img src="/icon-512.png" alt="" className="h-12 w-12 rounded-2xl" />
                 <div>
                   <h3 className="font-bold text-base leading-tight">Tambahkan ke Home Screen</h3>
-                  <p className="text-[11px] text-muted-foreground">No More Bully</p>
+                  <p className="text-[11px] text-muted-foreground">SafeSpace</p>
                 </div>
               </div>
               <button

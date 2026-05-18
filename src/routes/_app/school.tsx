@@ -103,7 +103,7 @@ function SchoolPage() {
 
   const share = async () => {
     if (!school) return;
-    const text = `Aku bagian dari komunitas ${school.display_name} 🎓 #NoMoreBully`;
+    const text = `Aku bagian dari komunitas ${school.display_name} 🎓 #SafeSpace`;
     await supabase.from("community_posts").insert({
       user_id: user!.id, content: text, category: "Komunitas", is_anonymous: false,
     });
@@ -195,10 +195,10 @@ function SchoolPage() {
   if (mode === "register") {
     return (
       <div>
-        <PageHeader title="Tambahkan Sekolahmu" subtitle="Ajukan sekolahmu ke No More Bully" />
+        <PageHeader title="Tambahkan Sekolahmu" subtitle="Ajukan sekolahmu ke SafeSpace" />
         <div className="p-5 space-y-4">
           <div className="p-4 rounded-2xl bg-gradient-to-br from-sky-50 to-indigo-50 border border-sky-200/60 text-sm text-foreground/80">
-            Pengajuan akan diverifikasi tim No More Bully. Setelah disetujui, kode resmi akan otomatis dibuat oleh sistem.
+            Pengajuan akan diverifikasi tim SafeSpace. Setelah disetujui, kode resmi akan otomatis dibuat oleh sistem.
           </div>
           <Field label="Nama Sekolah *" value={rName} onChange={setRName} placeholder="cth: SMA Negeri 1 Jakarta" />
           <Field label="Kota / Daerah *" value={rCity} onChange={setRCity} placeholder="cth: Jakarta Selatan" />
@@ -250,7 +250,7 @@ function SchoolPage() {
         <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-100 to-violet-100 border border-white/60 text-center">
           <GraduationCap className="h-12 w-12 mx-auto text-indigo-700 mb-2" />
           <h2 className="text-xl font-bold mb-1">Pilih Cara Mainmu</h2>
-          <p className="text-sm text-foreground/70">No More Bully adalah platform independen. Sekolah hadir sebagai komunitas pengguna.</p>
+          <p className="text-sm text-foreground/70">SafeSpace adalah platform independen. Sekolah hadir sebagai komunitas pengguna.</p>
         </div>
 
         <button
