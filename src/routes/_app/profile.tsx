@@ -27,19 +27,22 @@ function Profile() {
   const [schoolName, setSchoolName] = useState<string | null>(null);
   const [counts, setCounts] = useState({ diary: 0, day: 0, total: 7 });
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isCounselor, setIsCounselor] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: p }, { count: diaryCount }, { data: ch }, { data: roleRow }] = await Promise.all([
+      const [{ data: p }, { count: diaryCount }, { data: ch }, { data: roleRows }] = await Promise.all([
         supabase.from("profiles").select("display_name, avatar_url, bio, username, school_code").eq("id", user.id).maybeSingle(),
         supabase.from("diary_entries").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("challenge_progress").select("current_day, total_days").eq("user_id", user.id).limit(1).maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", user.id),
       ]);
       setProfile(p as any);
       setCounts({ diary: diaryCount ?? 0, day: ch?.current_day ?? 0, total: ch?.total_days ?? 7 });
-      setIsAdmin(!!roleRow);
+      const roles = (roleRows ?? []).map((r: any) => r.role);
+      setIsAdmin(roles.includes("admin"));
+      setIsCounselor(roles.includes("counselor"));
       if ((p as any)?.school_code) {
         const { data: s } = await supabase.from("schools").select("display_name").eq("code", (p as any).school_code).maybeSingle();
         setSchoolName((s as any)?.display_name ?? null);
@@ -104,6 +107,12 @@ function Profile() {
             </Link>
           ))}
         </div>
+
+        {(isCounselor || isAdmin) && (
+          <Link to="/counselor" className="w-full flex items-center justify-center gap-2 h-12 rounded-2xl bg-emerald-50 text-emerald-700 font-semibold text-sm border border-emerald-200">
+            <Inbox className="h-4 w-4" /> Dashboard BK / Konselor
+          </Link>
+        )}
 
         {isAdmin && (
           <Link to="/admin" className="w-full flex items-center justify-center gap-2 h-12 rounded-2xl bg-indigo-50 text-indigo-700 font-semibold text-sm border border-indigo-200">
