@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppSelfCheckRouteImport } from './routes/_app/self-check'
 import { Route as AppSchoolRouteImport } from './routes/_app/school'
 import { Route as AppSavedRouteImport } from './routes/_app/saved'
+import { Route as AppReportRouteImport } from './routes/_app/report'
 import { Route as AppQuizRouteImport } from './routes/_app/quiz'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppNotificationsRouteImport } from './routes/_app/notifications'
@@ -25,6 +26,7 @@ import { Route as AppHomeRouteImport } from './routes/_app/home'
 import { Route as AppEmergencyRouteImport } from './routes/_app/emergency'
 import { Route as AppEdukasiRouteImport } from './routes/_app/edukasi'
 import { Route as AppDiaryRouteImport } from './routes/_app/diary'
+import { Route as AppCounselorRouteImport } from './routes/_app/counselor'
 import { Route as AppCommunityRouteImport } from './routes/_app/community'
 import { Route as AppChallengeRouteImport } from './routes/_app/challenge'
 import { Route as AppAdminRouteImport } from './routes/_app/admin'
@@ -72,6 +74,11 @@ const AppSavedRoute = AppSavedRouteImport.update({
   path: '/saved',
   getParentRoute: () => AppRoute,
 } as any)
+const AppReportRoute = AppReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppQuizRoute = AppQuizRouteImport.update({
   id: '/quiz',
   path: '/quiz',
@@ -110,6 +117,11 @@ const AppEdukasiRoute = AppEdukasiRouteImport.update({
 const AppDiaryRoute = AppDiaryRouteImport.update({
   id: '/diary',
   path: '/diary',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCounselorRoute = AppCounselorRouteImport.update({
+  id: '/counselor',
+  path: '/counselor',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCommunityRoute = AppCommunityRouteImport.update({
@@ -156,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AppAdminRoute
   '/challenge': typeof AppChallengeRoute
   '/community': typeof AppCommunityRoute
+  '/counselor': typeof AppCounselorRoute
   '/diary': typeof AppDiaryRoute
   '/edukasi': typeof AppEdukasiRouteWithChildren
   '/emergency': typeof AppEmergencyRoute
@@ -164,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof AppNotificationsRoute
   '/profile': typeof AppProfileRouteWithChildren
   '/quiz': typeof AppQuizRoute
+  '/report': typeof AppReportRoute
   '/saved': typeof AppSavedRoute
   '/school': typeof AppSchoolRoute
   '/self-check': typeof AppSelfCheckRoute
@@ -180,6 +194,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AppAdminRoute
   '/challenge': typeof AppChallengeRoute
   '/community': typeof AppCommunityRoute
+  '/counselor': typeof AppCounselorRoute
   '/diary': typeof AppDiaryRoute
   '/edukasi': typeof AppEdukasiRouteWithChildren
   '/emergency': typeof AppEmergencyRoute
@@ -188,6 +203,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AppNotificationsRoute
   '/profile': typeof AppProfileRouteWithChildren
   '/quiz': typeof AppQuizRoute
+  '/report': typeof AppReportRoute
   '/saved': typeof AppSavedRoute
   '/school': typeof AppSchoolRoute
   '/self-check': typeof AppSelfCheckRoute
@@ -206,6 +222,7 @@ export interface FileRoutesById {
   '/_app/admin': typeof AppAdminRoute
   '/_app/challenge': typeof AppChallengeRoute
   '/_app/community': typeof AppCommunityRoute
+  '/_app/counselor': typeof AppCounselorRoute
   '/_app/diary': typeof AppDiaryRoute
   '/_app/edukasi': typeof AppEdukasiRouteWithChildren
   '/_app/emergency': typeof AppEmergencyRoute
@@ -214,6 +231,7 @@ export interface FileRoutesById {
   '/_app/notifications': typeof AppNotificationsRoute
   '/_app/profile': typeof AppProfileRouteWithChildren
   '/_app/quiz': typeof AppQuizRoute
+  '/_app/report': typeof AppReportRoute
   '/_app/saved': typeof AppSavedRoute
   '/_app/school': typeof AppSchoolRoute
   '/_app/self-check': typeof AppSelfCheckRoute
@@ -232,6 +250,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/challenge'
     | '/community'
+    | '/counselor'
     | '/diary'
     | '/edukasi'
     | '/emergency'
@@ -240,6 +259,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/quiz'
+    | '/report'
     | '/saved'
     | '/school'
     | '/self-check'
@@ -256,6 +276,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/challenge'
     | '/community'
+    | '/counselor'
     | '/diary'
     | '/edukasi'
     | '/emergency'
@@ -264,6 +285,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/profile'
     | '/quiz'
+    | '/report'
     | '/saved'
     | '/school'
     | '/self-check'
@@ -281,6 +303,7 @@ export interface FileRouteTypes {
     | '/_app/admin'
     | '/_app/challenge'
     | '/_app/community'
+    | '/_app/counselor'
     | '/_app/diary'
     | '/_app/edukasi'
     | '/_app/emergency'
@@ -289,6 +312,7 @@ export interface FileRouteTypes {
     | '/_app/notifications'
     | '/_app/profile'
     | '/_app/quiz'
+    | '/_app/report'
     | '/_app/saved'
     | '/_app/school'
     | '/_app/self-check'
@@ -364,6 +388,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSavedRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/report': {
+      id: '/_app/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof AppReportRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/quiz': {
       id: '/_app/quiz'
       path: '/quiz'
@@ -418,6 +449,13 @@ declare module '@tanstack/react-router' {
       path: '/diary'
       fullPath: '/diary'
       preLoaderRoute: typeof AppDiaryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/counselor': {
+      id: '/_app/counselor'
+      path: '/counselor'
+      fullPath: '/counselor'
+      preLoaderRoute: typeof AppCounselorRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/community': {
@@ -504,6 +542,7 @@ interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppChallengeRoute: typeof AppChallengeRoute
   AppCommunityRoute: typeof AppCommunityRoute
+  AppCounselorRoute: typeof AppCounselorRoute
   AppDiaryRoute: typeof AppDiaryRoute
   AppEdukasiRoute: typeof AppEdukasiRouteWithChildren
   AppEmergencyRoute: typeof AppEmergencyRoute
@@ -512,6 +551,7 @@ interface AppRouteChildren {
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppProfileRoute: typeof AppProfileRouteWithChildren
   AppQuizRoute: typeof AppQuizRoute
+  AppReportRoute: typeof AppReportRoute
   AppSavedRoute: typeof AppSavedRoute
   AppSchoolRoute: typeof AppSchoolRoute
   AppSelfCheckRoute: typeof AppSelfCheckRoute
@@ -521,6 +561,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppChallengeRoute: AppChallengeRoute,
   AppCommunityRoute: AppCommunityRoute,
+  AppCounselorRoute: AppCounselorRoute,
   AppDiaryRoute: AppDiaryRoute,
   AppEdukasiRoute: AppEdukasiRouteWithChildren,
   AppEmergencyRoute: AppEmergencyRoute,
@@ -529,6 +570,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppNotificationsRoute: AppNotificationsRoute,
   AppProfileRoute: AppProfileRouteWithChildren,
   AppQuizRoute: AppQuizRoute,
+  AppReportRoute: AppReportRoute,
   AppSavedRoute: AppSavedRoute,
   AppSchoolRoute: AppSchoolRoute,
   AppSelfCheckRoute: AppSelfCheckRoute,
