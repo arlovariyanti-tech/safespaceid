@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/MobileFrame";
-import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, MessageCircleHeart, Lock, ShieldCheck, Bookmark } from "lucide-react";
+import { NotebookPen, Target, Settings, LogOut, ChevronRight, Award, MessageCircleHeart, Lock, ShieldCheck, Bookmark, ShieldAlert, Inbox } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -14,6 +14,7 @@ type ProfileRow = { display_name: string | null; avatar_url: string | null; bio:
 
 const menus = [
   { to: "/saved", label: "Tersimpan", icon: Bookmark },
+  { to: "/report", label: "Lapor Anonim ke BK", icon: ShieldAlert },
   { to: "/emergency", label: "Konsultasi Aman", icon: MessageCircleHeart },
   { to: "/profile/privacy", label: "Privasi & Keamanan", icon: Lock },
   { to: "/profile/settings", label: "Pengaturan Akun", icon: Settings },
