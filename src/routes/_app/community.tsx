@@ -350,9 +350,13 @@ function CommentsModal({ post, onClose }: { post: Post; onClose: () => void }) {
 
   const submit = async () => {
     if (!text.trim() || !user) return;
+    const { clean, censored, matches } = censorProfanity(text.trim());
+    if (censored) toast.warning(`Kata kasar disensor: ${matches.slice(0,3).join(", ")}`);
+    const { data: prof } = await supabase.from("profiles").select("school_code").eq("id", user.id).maybeSingle();
     await supabase.from("community_comments").insert({
-      post_id: post.id, user_id: user.id, content: text.trim(), is_anonymous: anon,
-    });
+      post_id: post.id, user_id: user.id, content: clean, is_anonymous: anon,
+      school_code: (prof as any)?.school_code ?? null,
+    } as any);
     setText(""); setAnon(false);
     load();
   };
