@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      anonymous_reports: {
+        Row: {
+          category: string
+          counselor_notes: string | null
+          created_at: string
+          id: string
+          message: string
+          school_code: string
+          severity: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          counselor_notes?: string | null
+          created_at?: string
+          id?: string
+          message: string
+          school_code: string
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          counselor_notes?: string | null
+          created_at?: string
+          id?: string
+          message?: string
+          school_code?: string
+          severity?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       challenge_progress: {
         Row: {
           challenge_id: string
@@ -57,6 +93,7 @@ export type Database = {
           id: string
           is_anonymous: boolean
           post_id: string
+          school_code: string | null
           user_id: string
         }
         Insert: {
@@ -65,6 +102,7 @@ export type Database = {
           id?: string
           is_anonymous?: boolean
           post_id: string
+          school_code?: string | null
           user_id: string
         }
         Update: {
@@ -73,6 +111,7 @@ export type Database = {
           id?: string
           is_anonymous?: boolean
           post_id?: string
+          school_code?: string | null
           user_id?: string
         }
         Relationships: [
@@ -94,6 +133,7 @@ export type Database = {
           image_url: string | null
           is_anonymous: boolean
           mood: string | null
+          school_code: string | null
           user_id: string
         }
         Insert: {
@@ -104,6 +144,7 @@ export type Database = {
           image_url?: string | null
           is_anonymous?: boolean
           mood?: string | null
+          school_code?: string | null
           user_id: string
         }
         Update: {
@@ -114,6 +155,7 @@ export type Database = {
           image_url?: string | null
           is_anonymous?: boolean
           mood?: string | null
+          school_code?: string | null
           user_id?: string
         }
         Relationships: []
@@ -436,6 +478,7 @@ export type Database = {
     }
     Functions: {
       approve_school: { Args: { _pending_code: string }; Returns: string }
+      current_user_school: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -449,6 +492,10 @@ export type Database = {
       }
       mark_all_notifications_read: { Args: never; Returns: undefined }
       reject_school: { Args: { _pending_code: string }; Returns: undefined }
+      submit_anonymous_report: {
+        Args: { _category: string; _message: string; _severity: string }
+        Returns: string
+      }
       submit_school: {
         Args: {
           _city: string
@@ -460,7 +507,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "counselor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -588,7 +635,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "counselor"],
     },
   },
 } as const

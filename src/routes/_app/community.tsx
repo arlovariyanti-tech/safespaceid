@@ -2,10 +2,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { PageHeader } from "@/components/MobileFrame";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Plus, Flag, X, Sparkles, ImagePlus, Loader2 } from "lucide-react";
+import { Heart, MessageCircle, Plus, Flag, X, Sparkles, ImagePlus, Loader2, ShieldAlert } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { censorProfanity } from "@/lib/profanity";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app/community")({
   component: Community,
@@ -86,7 +88,14 @@ function Community() {
 
   const submit = async () => {
     if ((!text.trim() && !imageFile) || !user) return;
+    const { clean, censored, matches } = censorProfanity(text.trim());
+    if (censored) {
+      toast.warning(`Kata kasar disensor: ${matches.slice(0,3).join(", ")}`, { description: "Jaga ruang ini tetap aman 🤍" });
+    }
     setPosting(true);
+    const { data: prof } = await supabase.from("profiles").select("school_code").eq("id", user.id).maybeSingle();
+    const school_code = (prof as any)?.school_code ?? null;
+
     let image_url: string | null = null;
     if (imageFile) {
       const ext = imageFile.name.split(".").pop() || "jpg";
@@ -96,11 +105,12 @@ function Community() {
       image_url = supabase.storage.from("community").getPublicUrl(path).data.publicUrl;
     }
     const { error } = await supabase.from("community_posts").insert({
-      user_id: user.id, content: text.trim(), category, mood, is_anonymous: anon, image_url,
-    });
+      user_id: user.id, content: clean, category, mood, is_anonymous: anon, image_url,
+      school_code,
+    } as any);
     setPosting(false);
     if (error) return toast.error("Gagal memposting");
-    toast.success("Ceritamu dibagikan 🤍");
+    toast.success(school_code ? "Dibagikan ke forum sekolahmu 🏫" : "Ceritamu dibagikan 🤍");
     setText(""); setMood(null); setAnon(false); setCategory("Perasaan Hari Ini");
     setImageFile(null); setImagePreview(null);
     setShowCompose(false);
@@ -340,9 +350,13 @@ function CommentsModal({ post, onClose }: { post: Post; onClose: () => void }) {
 
   const submit = async () => {
     if (!text.trim() || !user) return;
+    const { clean, censored, matches } = censorProfanity(text.trim());
+    if (censored) toast.warning(`Kata kasar disensor: ${matches.slice(0,3).join(", ")}`);
+    const { data: prof } = await supabase.from("profiles").select("school_code").eq("id", user.id).maybeSingle();
     await supabase.from("community_comments").insert({
-      post_id: post.id, user_id: user.id, content: text.trim(), is_anonymous: anon,
-    });
+      post_id: post.id, user_id: user.id, content: clean, is_anonymous: anon,
+      school_code: (prof as any)?.school_code ?? null,
+    } as any);
     setText(""); setAnon(false);
     load();
   };
