@@ -86,6 +86,178 @@ export type Database = {
         }
         Relationships: []
       }
+      class_challenges: {
+        Row: {
+          class_id: string
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          title: string
+          total_days: number
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          title: string
+          total_days?: number
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          title?: string
+          total_days?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_challenges_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_members: {
+        Row: {
+          class_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          class_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          class_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_members_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_posts: {
+        Row: {
+          class_id: string
+          content: string
+          created_at: string
+          id: string
+          is_anonymous: boolean
+          mood: string | null
+          user_id: string
+        }
+        Insert: {
+          class_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean
+          mood?: string | null
+          user_id: string
+        }
+        Update: {
+          class_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean
+          mood?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_posts_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_supports: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_supports_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "class_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          school_code: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          school_code: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          school_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classes_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       community_comments: {
         Row: {
           content: string
@@ -221,6 +393,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      homeroom_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          school_code: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          school_code: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          school_code?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homeroom_codes_school_code_fkey"
+            columns: ["school_code"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       notifications: {
         Row: {
@@ -477,8 +684,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _gen_class_code: { Args: { _name: string }; Returns: string }
       approve_school: { Args: { _pending_code: string }; Returns: string }
+      checkin_challenge: {
+        Args: { _challenge_id: string; _total_days?: number }
+        Returns: {
+          already_done: boolean
+          completed: boolean
+          current_day: number
+        }[]
+      }
+      create_class: { Args: { _name: string }; Returns: string }
+      current_user_class: { Args: never; Returns: string }
       current_user_school: { Args: never; Returns: string }
+      generate_homeroom_codes: {
+        Args: { _count: number; _school_code: string }
+        Returns: string[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -486,12 +708,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_class_homeroom: { Args: { _class_id: string }; Returns: boolean }
+      is_class_member: { Args: { _class_id: string }; Returns: boolean }
+      join_class: { Args: { _code: string }; Returns: string }
       join_school: {
         Args: { _code: string; _display_name?: string }
         Returns: string
       }
+      leave_class: { Args: never; Returns: undefined }
       mark_all_notifications_read: { Args: never; Returns: undefined }
       reject_school: { Args: { _pending_code: string }; Returns: undefined }
+      reset_class_code: { Args: { _class_id: string }; Returns: string }
       submit_anonymous_report: {
         Args: { _category: string; _message: string; _severity: string }
         Returns: string
@@ -505,6 +732,7 @@ export type Database = {
         }
         Returns: string
       }
+      verify_homeroom_code: { Args: { _code: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user" | "counselor"

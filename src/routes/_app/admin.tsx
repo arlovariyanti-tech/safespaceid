@@ -2,14 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PageHeader } from "@/components/MobileFrame";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
-import { Check, X, ShieldAlert, Copy } from "lucide-react";
+import { Check, X, ShieldAlert, Copy, KeyRound, Crown } from "lucide-react";
 
 export const Route = createFileRoute("/_app/admin")({
   component: AdminPage,
 });
+
 
 type SchoolRow = {
   code: string;
@@ -122,18 +124,7 @@ function AdminPage() {
           </h3>
           <div className="space-y-2">
             {approved.map((s) => (
-              <div key={s.code} className="p-3 rounded-xl bg-card border border-border/60 flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-sm">{s.display_name}</p>
-                  <p className="text-[11px] text-muted-foreground">{s.city || "—"}</p>
-                </div>
-                <button
-                  onClick={() => { navigator.clipboard.writeText(s.code); toast.success("Kode disalin"); }}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-xs font-mono font-bold"
-                >
-                  <Copy className="h-3 w-3" /> {s.code}
-                </button>
-              </div>
+              <SchoolRowItem key={s.code} school={s} />
             ))}
           </div>
         </section>
@@ -141,3 +132,68 @@ function AdminPage() {
     </div>
   );
 }
+
+function SchoolRowItem({ school }: { school: SchoolRow }) {
+  const [open, setOpen] = useState(false);
+  const [count, setCount] = useState(5);
+  const [generating, setGenerating] = useState(false);
+  const [codes, setCodes] = useState<string[]>([]);
+
+  const generate = async () => {
+    setGenerating(true);
+    const { data, error } = await (supabase as any).rpc("generate_homeroom_codes", {
+      _school_code: school.code, _count: count,
+    });
+    setGenerating(false);
+    if (error) { toast.error(error.message); return; }
+    setCodes((data ?? []).map((r: any) => typeof r === "string" ? r : r.generate_homeroom_codes));
+    toast.success(`${count} kode walas dibuat`);
+  };
+
+  return (
+    <div className="rounded-xl bg-card border border-border/60 overflow-hidden">
+      <div className="p-3 flex items-center justify-between">
+        <div>
+          <p className="font-semibold text-sm">{school.display_name}</p>
+          <p className="text-[11px] text-muted-foreground">{school.city || "—"}</p>
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => { navigator.clipboard.writeText(school.code); toast.success("Kode disalin"); }}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-xs font-mono font-bold"
+          >
+            <Copy className="h-3 w-3" /> {school.code}
+          </button>
+          <button onClick={() => setOpen(o => !o)} className="p-1.5 rounded-md bg-amber-50 text-amber-700" title="Kode walas">
+            <Crown className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+      {open && (
+        <div className="p-3 border-t border-border/60 bg-amber-50/40 space-y-2">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-amber-800 flex items-center gap-1">
+            <KeyRound className="h-3 w-3" /> Generate Kode Wali Kelas
+          </p>
+          <div className="flex gap-2">
+            <Input type="number" min={1} max={20} value={count} onChange={(e) => setCount(Math.max(1, Math.min(20, +e.target.value || 1)))} className="h-9 w-20" />
+            <Button size="sm" onClick={generate} disabled={generating} className="flex-1">
+              {generating ? "Membuat..." : "Generate"}
+            </Button>
+          </div>
+          {codes.length > 0 && (
+            <div className="space-y-1">
+              {codes.map(c => (
+                <button key={c} onClick={() => { navigator.clipboard.writeText(c); toast.success("Disalin"); }}
+                  className="w-full text-left px-2.5 py-1.5 rounded-md bg-white text-xs font-mono font-bold flex items-center justify-between hover:bg-amber-100">
+                  <span>{c}</span> <Copy className="h-3 w-3 text-muted-foreground" />
+                </button>
+              ))}
+              <p className="text-[10px] text-muted-foreground italic">Bagikan kode ini ke wali kelas. Sekali pakai.</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
