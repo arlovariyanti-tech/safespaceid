@@ -215,13 +215,21 @@ function Challenge() {
     if (!p) return;
     setLoading(true);
     try {
-      const newDay = p.current_day + 1;
-      const completed = newDay >= 7;
-      await supabase.from("challenge_progress").update({
-        current_day: newDay, last_checked_date: today(), completed,
-      }).eq("id", p.id!);
+      // Server-side hardened check-in: max +1/day, can't skip
+      const { data: res, error } = await (supabase as any).rpc("checkin_challenge", {
+        _challenge_id: l.id, _total_days: 7,
+      });
+      if (error) throw error;
+      const row = Array.isArray(res) ? res[0] : res;
+      if (row?.already_done) {
+        toast.info("Hari ini sudah ditandai ✓");
+        setReflectOpen(false); setPendingLevel(null);
+        setLoading(false);
+        return;
+      }
+      const newDay = row?.current_day ?? p.current_day + 1;
+      const completed = !!row?.completed;
 
-      // Save reflection
       if (reflectGood.trim() || reflectHard.trim()) {
         await supabase.from("diary_entries").insert({
           user_id: user.id,
@@ -233,7 +241,6 @@ function Challenge() {
 
       await updateStreak();
 
-      // School contribution (best effort, ignore duplicates)
       if (schoolCode) {
         await supabase.from("school_check_ins").insert({
           user_id: user.id, school_code: schoolCode, check_date: today(), challenge_day: newDay,
@@ -247,11 +254,12 @@ function Challenge() {
       setTimeout(() => setShowConfetti(false), 1800);
       toast.success(completed ? `🏅 Badge "${l.badge}" diperoleh!` : `Hari ${newDay}/7 selesai ✓`);
     } catch (e: any) {
-      toast.error("Gagal menyimpan. Coba lagi.");
+      toast.error(e?.message || "Gagal menyimpan. Coba lagi.");
     } finally {
       setLoading(false);
     }
   };
+
 
   const startSeason2 = async () => {
     if (!user) return;
