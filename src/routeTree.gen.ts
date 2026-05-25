@@ -22,12 +22,14 @@ import { Route as AppQuizRouteImport } from './routes/_app/quiz'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppNotificationsRouteImport } from './routes/_app/notifications'
 import { Route as AppMotivationRouteImport } from './routes/_app/motivation'
+import { Route as AppLeaderboardRouteImport } from './routes/_app/leaderboard'
 import { Route as AppHomeRouteImport } from './routes/_app/home'
 import { Route as AppEmergencyRouteImport } from './routes/_app/emergency'
 import { Route as AppEdukasiRouteImport } from './routes/_app/edukasi'
 import { Route as AppDiaryRouteImport } from './routes/_app/diary'
 import { Route as AppCounselorRouteImport } from './routes/_app/counselor'
 import { Route as AppCommunityRouteImport } from './routes/_app/community'
+import { Route as AppClassRouteImport } from './routes/_app/class'
 import { Route as AppChallengeRouteImport } from './routes/_app/challenge'
 import { Route as AppAdminRouteImport } from './routes/_app/admin'
 import { Route as AppProfileSettingsRouteImport } from './routes/_app/profile.settings'
@@ -99,6 +101,11 @@ const AppMotivationRoute = AppMotivationRouteImport.update({
   path: '/motivation',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLeaderboardRoute = AppLeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppHomeRoute = AppHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -127,6 +134,11 @@ const AppCounselorRoute = AppCounselorRouteImport.update({
 const AppCommunityRoute = AppCommunityRouteImport.update({
   id: '/community',
   path: '/community',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppClassRoute = AppClassRouteImport.update({
+  id: '/class',
+  path: '/class',
   getParentRoute: () => AppRoute,
 } as any)
 const AppChallengeRoute = AppChallengeRouteImport.update({
@@ -167,12 +179,14 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/admin': typeof AppAdminRoute
   '/challenge': typeof AppChallengeRoute
+  '/class': typeof AppClassRoute
   '/community': typeof AppCommunityRoute
   '/counselor': typeof AppCounselorRoute
   '/diary': typeof AppDiaryRoute
   '/edukasi': typeof AppEdukasiRouteWithChildren
   '/emergency': typeof AppEmergencyRoute
   '/home': typeof AppHomeRoute
+  '/leaderboard': typeof AppLeaderboardRoute
   '/motivation': typeof AppMotivationRoute
   '/notifications': typeof AppNotificationsRoute
   '/profile': typeof AppProfileRouteWithChildren
@@ -193,12 +207,14 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/admin': typeof AppAdminRoute
   '/challenge': typeof AppChallengeRoute
+  '/class': typeof AppClassRoute
   '/community': typeof AppCommunityRoute
   '/counselor': typeof AppCounselorRoute
   '/diary': typeof AppDiaryRoute
   '/edukasi': typeof AppEdukasiRouteWithChildren
   '/emergency': typeof AppEmergencyRoute
   '/home': typeof AppHomeRoute
+  '/leaderboard': typeof AppLeaderboardRoute
   '/motivation': typeof AppMotivationRoute
   '/notifications': typeof AppNotificationsRoute
   '/profile': typeof AppProfileRouteWithChildren
@@ -221,12 +237,14 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/_app/admin': typeof AppAdminRoute
   '/_app/challenge': typeof AppChallengeRoute
+  '/_app/class': typeof AppClassRoute
   '/_app/community': typeof AppCommunityRoute
   '/_app/counselor': typeof AppCounselorRoute
   '/_app/diary': typeof AppDiaryRoute
   '/_app/edukasi': typeof AppEdukasiRouteWithChildren
   '/_app/emergency': typeof AppEmergencyRoute
   '/_app/home': typeof AppHomeRoute
+  '/_app/leaderboard': typeof AppLeaderboardRoute
   '/_app/motivation': typeof AppMotivationRoute
   '/_app/notifications': typeof AppNotificationsRoute
   '/_app/profile': typeof AppProfileRouteWithChildren
@@ -249,12 +267,14 @@ export interface FileRouteTypes {
     | '/register'
     | '/admin'
     | '/challenge'
+    | '/class'
     | '/community'
     | '/counselor'
     | '/diary'
     | '/edukasi'
     | '/emergency'
     | '/home'
+    | '/leaderboard'
     | '/motivation'
     | '/notifications'
     | '/profile'
@@ -275,12 +295,14 @@ export interface FileRouteTypes {
     | '/register'
     | '/admin'
     | '/challenge'
+    | '/class'
     | '/community'
     | '/counselor'
     | '/diary'
     | '/edukasi'
     | '/emergency'
     | '/home'
+    | '/leaderboard'
     | '/motivation'
     | '/notifications'
     | '/profile'
@@ -302,12 +324,14 @@ export interface FileRouteTypes {
     | '/register'
     | '/_app/admin'
     | '/_app/challenge'
+    | '/_app/class'
     | '/_app/community'
     | '/_app/counselor'
     | '/_app/diary'
     | '/_app/edukasi'
     | '/_app/emergency'
     | '/_app/home'
+    | '/_app/leaderboard'
     | '/_app/motivation'
     | '/_app/notifications'
     | '/_app/profile'
@@ -423,6 +447,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppMotivationRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/leaderboard': {
+      id: '/_app/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof AppLeaderboardRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/home': {
       id: '/_app/home'
       path: '/home'
@@ -463,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/community'
       fullPath: '/community'
       preLoaderRoute: typeof AppCommunityRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/class': {
+      id: '/_app/class'
+      path: '/class'
+      fullPath: '/class'
+      preLoaderRoute: typeof AppClassRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/challenge': {
@@ -541,12 +579,14 @@ const AppProfileRouteWithChildren = AppProfileRoute._addFileChildren(
 interface AppRouteChildren {
   AppAdminRoute: typeof AppAdminRoute
   AppChallengeRoute: typeof AppChallengeRoute
+  AppClassRoute: typeof AppClassRoute
   AppCommunityRoute: typeof AppCommunityRoute
   AppCounselorRoute: typeof AppCounselorRoute
   AppDiaryRoute: typeof AppDiaryRoute
   AppEdukasiRoute: typeof AppEdukasiRouteWithChildren
   AppEmergencyRoute: typeof AppEmergencyRoute
   AppHomeRoute: typeof AppHomeRoute
+  AppLeaderboardRoute: typeof AppLeaderboardRoute
   AppMotivationRoute: typeof AppMotivationRoute
   AppNotificationsRoute: typeof AppNotificationsRoute
   AppProfileRoute: typeof AppProfileRouteWithChildren
@@ -560,12 +600,14 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAdminRoute: AppAdminRoute,
   AppChallengeRoute: AppChallengeRoute,
+  AppClassRoute: AppClassRoute,
   AppCommunityRoute: AppCommunityRoute,
   AppCounselorRoute: AppCounselorRoute,
   AppDiaryRoute: AppDiaryRoute,
   AppEdukasiRoute: AppEdukasiRouteWithChildren,
   AppEmergencyRoute: AppEmergencyRoute,
   AppHomeRoute: AppHomeRoute,
+  AppLeaderboardRoute: AppLeaderboardRoute,
   AppMotivationRoute: AppMotivationRoute,
   AppNotificationsRoute: AppNotificationsRoute,
   AppProfileRoute: AppProfileRouteWithChildren,

@@ -46,7 +46,7 @@ function LeaderboardPage() {
             name: p.display_name || "Sahabat",
             avatar: p.avatar_url,
             score: (postCount[p.id] || 0) * 2 + (supCount[p.id] || 0),
-          })).sort((a, b) => b.score - a.score);
+          })).sort((a: ClassRow, b: ClassRow) => b.score - a.score);
           setClassRows(rows);
         }
       }
@@ -66,7 +66,7 @@ function LeaderboardPage() {
         members: memCount[s.code] || 0,
         checkins: chkCount[s.code] || 0,
         score: (memCount[s.code] || 0) * 2 + (chkCount[s.code] || 0) * 3,
-      })).sort((a, b) => b.score - a.score).slice(0, 20);
+      })).sort((a: SchoolRow, b: SchoolRow) => b.score - a.score).slice(0, 20);
       setSchoolRows(srows);
     })();
   }, [user]);
